@@ -1,6 +1,5 @@
 "use client";
 import { classNames } from "@/utils";
-import React from "react";
 import { MagnifyingGlassIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { bottomTotalItems, navItems, logo } from "./data";
 

@@ -1,6 +1,5 @@
 "use client";
 import { classNames } from "@/utils";
-import React from "react";
 import {
   MagnifyingGlassIcon,
   UserPlusIcon,
