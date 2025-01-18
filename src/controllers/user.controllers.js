@@ -169,7 +169,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     // Get the refresh token from the request cookies
-    const { incomingRefreshToken } = req.cookies;
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
 
     // Check if the refresh token exists
     if (!incomingRefreshToken) {
@@ -178,7 +178,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     try {
         // Verify the refresh token which returns the user id
-        const decoded = jwt.verify(incomingRefreshToken, process.env.JWT_SECRET);
+        const decoded = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
 
         // Find the user in the database by id
         const user = await User.findById(decoded?._id);
@@ -213,7 +213,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
                     }
                 ));
     } catch (error) {
-        throw new ApiError(401, "Unauthorized Request");
+        throw new ApiError(401, error.message);
     }
 });
 
