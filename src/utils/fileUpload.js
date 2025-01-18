@@ -28,3 +28,13 @@ export const uploadOnCloudinary = async (localFilePath, fileType) => {
     // console.log("Error while uploading file: ", error);
   }
 };
+
+export const deleteFromCloudinary = async (publicId, fileType) => {
+  try {
+    if (!publicId) return null; // If publicId does not exist, return null
+    const deletedFile = await cloudinary.v2.uploader.destroy(`yt-clone-backend/${fileType}/${publicId}`); // Delete file from cloudinary
+    return deletedFile; // Return the deleted file
+  } catch (error) {
+    console.log("Error while deleting file: ", error);
+  }
+}
