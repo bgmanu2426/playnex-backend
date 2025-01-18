@@ -217,4 +217,147 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body; // Get the required user data from the request body
+
+    // if (newPassword !== confirmPassword) {
+    //     throw new ApiError(400, "Passwords do not match");
+    // }
+
+    // Forms validation - Check for not empty, valid email, password length
+    if (!currentPassword) {
+        throw new ApiError(400, "Current Password is required");
+    } else if (!newPassword) {
+        throw new ApiError(400, "New Password is required");
+    }
+
+    // Check if the new password meets the required criteria
+    const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+    if (!passwordRegex.test(newPassword)) {
+        throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
+    }
+
+    // Find the user in the database by id
+    const user = await User.findById(req.user?._id);
+    const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
+
+    if (!isPasswordCorrect) {
+        throw new ApiError(401, "Invalid current password");
+    }
+
+    user.password = newPassword;
+
+    // Save the updated user object to the database
+    await user.save({ validateBeforeSave: false });
+
+    // return the response
+    return res
+        .status(200)
+        .json(new ApiResponse(200, "Password changed successfully"));
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+    // return the response
+    return res
+        .status(200)
+        .json(new ApiResponse(200, "User found", req.user));
+});
+
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const { fullName, email } = req.body; // Get the required user data from the request body
+
+    // Forms validation - Check for not empty, valid email or full name
+    if (!fullName || !email) {
+        throw new ApiError(400, "Full name or email are required");
+    }
+
+    // Check if the user already exists in the database : username, email
+    const updateduser = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                fullName,
+                email
+            }
+        }, { new: true }
+    ).select("-password -refreshToken");
+
+    // return the response
+    return res
+        .status(200)
+        .json(new ApiResponse(200, "Account details updated successfully", updateduser));
+});
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+
+    // if images exist, and upload to cloudinary
+    const avatarLocalPath = req.file?.path;
+    if (!avatarLocalPath) {
+        throw new ApiError(400, "Avatar is required");
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath, "avatar"); // upload the avatar to cloudinary
+
+    if (!avatar) {
+        throw new ApiError(500, "Avatar upload failed");
+    }
+
+    // Create a new user object and check if the user is saved to the database
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                avatar: avatar.secure_url || "",
+            }
+        }
+        , { new: true }
+    ).select("-password -refreshToken");
+
+    // return the response
+    return res
+        .status(200)
+        .json(new ApiResponse(200, "User avatar updated successfully", user));
+});
+
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+
+    // if images exist, and upload to cloudinary
+    const coverImagePath = req.file?.path;
+    if (!coverImagePath) {
+        throw new ApiError(400, "Cover image is required");
+    }
+
+    const coverImage = await uploadOnCloudinary(coverImagePath, "avatar"); // upload the avatar to cloudinary
+
+    if (!coverImage) {
+        throw new ApiError(500, "Cover image upload failed");
+    }
+
+    // Create a new user object and check if the user is saved to the database
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                coverImage: coverImage.secure_url || "",
+            }
+        }
+        , { new: true }
+    ).select("-password -refreshToken");
+
+    // return the response
+    return res
+        .status(200)
+        .json(new ApiResponse(200, "User cover image updated successfully", user));
+});
+
+export {
+    registerUser,
+    loginUser,
+    logoutUser,
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    updateAccountDetails,
+    updateUserAvatar,
+    updateUserCoverImage
+};
