@@ -3,6 +3,7 @@ import ApiError from "../utils/ApiError.js";
 import { User } from "../models/user.models.js";
 import { uploadOnCloudinary } from "../utils/fileUpload.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -60,8 +61,8 @@ const registerUser = asyncHandler(async (req, res) => {
     if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
         coverImageLocalPath = req.files.coverImage[0].path;
     }
-    const avatarLocalPath = req.files?.avatar[0]?.path;
 
+    const avatarLocalPath = req.files?.avatar[0]?.path;
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar is required");
     }
@@ -104,9 +105,13 @@ const loginUser = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body;
 
     // Forms validation - Check for not empty, valid email, password length
-    if (!email || !username) {
-        throw new ApiError(400, "Email or username is required");
+    if (!email && !username) {
+        throw new ApiError(400, "Email or Username is required");
+    } else if (!password) {
+        throw new ApiError(400, "Password is required");
     }
+
+
     const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
     if (!passwordRegex.test(password)) {
         throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
@@ -153,4 +158,63 @@ const loginUser = asyncHandler(async (req, res) => {
             ))
 });
 
-export { registerUser, loginUser };
+const logoutUser = asyncHandler(async (req, res) => {
+    // Clear the cookies and refresh token from the database
+    return res
+        .status(200)
+        .clearCookie("accessToken")
+        .clearCookie("refreshToken")
+        .json(new ApiResponse(200, "User Logged Out Successfully"));
+});
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    // Get the refresh token from the request cookies
+    const { incomingRefreshToken } = req.cookies;
+
+    // Check if the refresh token exists
+    if (!incomingRefreshToken) {
+        throw new ApiError(401, "Unauthorized Request");
+    }
+
+    try {
+        // Verify the refresh token which returns the user id
+        const decoded = jwt.verify(incomingRefreshToken, process.env.JWT_SECRET);
+
+        // Find the user in the database by id
+        const user = await User.findById(decoded?._id);
+
+        // Check if the user exists in the database
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+
+        // Compare the refresh token with the one in the database
+        if (incomingRefreshToken !== user?.refreshToken) {
+            throw new ApiError(401, "Invalid refresh token");
+        }
+
+        const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user?._id);
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    "Access Token Refreshed Successfully",
+                    {
+                        accessToken, refreshToken
+                    }
+                ));
+    } catch (error) {
+        throw new ApiError(401, "Unauthorized Request");
+    }
+});
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken };
