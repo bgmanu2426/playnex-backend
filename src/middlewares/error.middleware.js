@@ -12,7 +12,9 @@ const errorMiddleware = (err, req, res, next) => {
     const data = err.data || null;
     const errors = err.errors || [];
 
-    res.status(statusCode).json(new ApiResponse(statusCode, message, data, errors));
+    res.status(statusCode).json(
+        new ApiResponse(statusCode, message, data, errors)
+    );
 };
 
 export default errorMiddleware;

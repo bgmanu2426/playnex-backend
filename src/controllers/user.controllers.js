@@ -1,7 +1,10 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import { User } from "../models/user.models.js";
-import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/fileUpload.js";
+import {
+    deleteFromCloudinary,
+    uploadOnCloudinary,
+} from "../utils/fileUpload.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import DATA from "../config.js";
@@ -17,11 +20,14 @@ const generateAccessAndRefreshTokens = async (userId) => {
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false });
 
-        return { accessToken, refreshToken }
+        return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
-}
+};
 
 const registerUser = asyncHandler(async (req, res) => {
     try {
@@ -44,10 +50,14 @@ const registerUser = asyncHandler(async (req, res) => {
             throw new ApiError(400, "Email is required");
         }
 
-
-        const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+        const passwordRegex = new RegExp(
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+        );
         if (!passwordRegex.test(password)) {
-            throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
+            throw new ApiError(
+                400,
+                "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character"
+            );
         }
 
         // Check if the user already exists in the database : username or email
@@ -61,7 +71,11 @@ const registerUser = asyncHandler(async (req, res) => {
 
         // if images exist, upload to cloudinary
         let coverImageLocalPath;
-        if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+        if (
+            req.files &&
+            Array.isArray(req.files.coverImage) &&
+            req.files.coverImage.length > 0
+        ) {
             coverImageLocalPath = req.files.coverImage[0].path;
         }
 
@@ -71,7 +85,10 @@ const registerUser = asyncHandler(async (req, res) => {
         }
 
         const avatar = await uploadOnCloudinary(avatarLocalPath, "avatar"); // upload the avatar to cloudinary
-        const coverImage = await uploadOnCloudinary(coverImageLocalPath, "coverImage"); // upload the cover image to cloudinary
+        const coverImage = await uploadOnCloudinary(
+            coverImageLocalPath,
+            "coverImage"
+        ); // upload the cover image to cloudinary
 
         if (!avatar) {
             throw new ApiError(500, "Avatar upload failed");
@@ -99,9 +116,14 @@ const registerUser = asyncHandler(async (req, res) => {
         // return the response
         return res
             .status(201)
-            .json(new ApiResponse(201, "User created successfully", createdUser));
+            .json(
+                new ApiResponse(201, "User created successfully", createdUser)
+            );
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
 });
 
@@ -117,16 +139,20 @@ const loginUser = asyncHandler(async (req, res) => {
             throw new ApiError(400, "Password is required");
         }
 
-
-        const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+        const passwordRegex = new RegExp(
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+        );
         if (!passwordRegex.test(password)) {
-            throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
+            throw new ApiError(
+                400,
+                "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character"
+            );
         }
 
         // Find the user in the database by email
         const user = await User.findOne({
             $or: [{ email }],
-        })
+        });
 
         // Check if the user exists in the database
         if (!user) {
@@ -140,30 +166,35 @@ const loginUser = asyncHandler(async (req, res) => {
         }
 
         // Generate access token and refresh token
-        const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+        const { accessToken, refreshToken } =
+            await generateAccessAndRefreshTokens(user._id);
 
         // Send cookies with access token and refresh token and return the response
-        const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+        const loggedInUser = await User.findById(user._id).select(
+            "-password -refreshToken"
+        );
 
         const options = {
             httpOnly: true,
-            secure: true
-        }
+            secure: true,
+        };
 
         return res
             .status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
             .json(
-                new ApiResponse(
-                    200,
-                    "User LoggedIn Successfully",
-                    {
-                        user: loggedInUser, accessToken, refreshToken
-                    }
-                ))
+                new ApiResponse(200, "User LoggedIn Successfully", {
+                    user: loggedInUser,
+                    accessToken,
+                    refreshToken,
+                })
+            );
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
 });
 
@@ -173,18 +204,18 @@ const logoutUser = asyncHandler(async (req, res) => {
         req.user._id,
         {
             $unset: {
-                refreshToken: 1 // this removes the field from document
-            }
+                refreshToken: 1, // this removes the field from document
+            },
         },
         {
-            new: true
+            new: true,
         }
-    )
+    );
 
     const options = {
         httpOnly: true,
-        secure: true
-    }
+        secure: true,
+    };
 
     return res
         .status(200)
@@ -195,7 +226,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     // Get the refresh token from the request cookies
-    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+    const incomingRefreshToken =
+        req.cookies.refreshToken || req.body.refreshToken;
 
     // Check if the refresh token exists
     if (!incomingRefreshToken) {
@@ -204,7 +236,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     try {
         // Verify the refresh token which returns the user id
-        const decoded = jwt.verify(incomingRefreshToken, DATA.tokens.refreshTokenSecret);
+        const decoded = jwt.verify(
+            incomingRefreshToken,
+            DATA.tokens.refreshTokenSecret
+        );
 
         // Find the user in the database by id
         const user = await User.findById(decoded?._id);
@@ -219,27 +254,29 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             throw new ApiError(401, "Invalid refresh token");
         }
 
-        const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user?._id);
+        const { accessToken, refreshToken } =
+            await generateAccessAndRefreshTokens(user?._id);
 
         const options = {
             httpOnly: true,
-            secure: true
-        }
+            secure: true,
+        };
 
         return res
             .status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
             .json(
-                new ApiResponse(
-                    200,
-                    "Access Token Refreshed Successfully",
-                    {
-                        accessToken, refreshToken
-                    }
-                ));
+                new ApiResponse(200, "Access Token Refreshed Successfully", {
+                    accessToken,
+                    refreshToken,
+                })
+            );
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
 });
 
@@ -259,9 +296,14 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
         }
 
         // Check if the new password meets the required criteria
-        const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+        const passwordRegex = new RegExp(
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+        );
         if (!passwordRegex.test(newPassword)) {
-            throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
+            throw new ApiError(
+                400,
+                "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character"
+            );
         }
 
         // Find the user in the database by id
@@ -282,7 +324,10 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, "Password changed successfully"));
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
 });
 
@@ -293,9 +338,11 @@ const getCurrentUser = asyncHandler(async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, "User found", req.user));
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
-
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
@@ -313,22 +360,31 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
             {
                 $set: {
                     fullName,
-                    email
-                }
-            }, { new: true }
+                    email,
+                },
+            },
+            { new: true }
         ).select("-password -refreshToken");
 
         // return the response
         return res
             .status(200)
-            .json(new ApiResponse(200, "Account details updated successfully", updateduser));
+            .json(
+                new ApiResponse(
+                    200,
+                    "Account details updated successfully",
+                    updateduser
+                )
+            );
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
-
     try {
         // if images exist, and upload to cloudinary
         const avatarLocalPath = req.file?.path;
@@ -356,22 +412,26 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
             {
                 $set: {
                     avatar: avatar.secure_url || "",
-                }
-            }
-            , { new: true }
+                },
+            },
+            { new: true }
         ).select("-password -refreshToken");
 
         // return the response
         return res
             .status(200)
-            .json(new ApiResponse(200, "User avatar updated successfully", user));
+            .json(
+                new ApiResponse(200, "User avatar updated successfully", user)
+            );
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
 });
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
-
     try {
         // if images exist, and upload to cloudinary
         const coverImagePath = req.file?.path;
@@ -381,14 +441,25 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         }
 
         // Delete the old cover image from cloudinary
-        const oldCoverImage = await User.findById(req.user?._id).select("coverImage");
+        const oldCoverImage = await User.findById(req.user?._id).select(
+            "coverImage"
+        );
 
         if (oldCoverImage?.coverImage) {
-            const publicId = oldCoverImage.coverImage.split("/").pop()?.split(".")[0];
-            const deleteCoverImage = await deleteFromCloudinary(publicId, "coverImage");
+            const publicId = oldCoverImage.coverImage
+                .split("/")
+                .pop()
+                ?.split(".")[0];
+            const deleteCoverImage = await deleteFromCloudinary(
+                publicId,
+                "coverImage"
+            );
         }
 
-        const coverImage = await uploadOnCloudinary(coverImagePath, "coverImage"); // upload the avatar to cloudinary
+        const coverImage = await uploadOnCloudinary(
+            coverImagePath,
+            "coverImage"
+        ); // upload the avatar to cloudinary
 
         if (!coverImage) {
             throw new ApiError(500, "Cover image upload failed");
@@ -400,17 +471,26 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
             {
                 $set: {
                     coverImage: coverImage.secure_url || "",
-                }
-            }
-            , { new: true }
+                },
+            },
+            { new: true }
         ).select("-password -refreshToken");
 
         // return the response
         return res
             .status(200)
-            .json(new ApiResponse(200, "User cover image updated successfully", user));
+            .json(
+                new ApiResponse(
+                    200,
+                    "User cover image updated successfully",
+                    user
+                )
+            );
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
 });
 
@@ -425,24 +505,24 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         const channel = await User.aggregate([
             {
                 $match: {
-                    username: username?.toLowerCase()
-                }
+                    username: username?.toLowerCase(),
+                },
             },
             {
                 $lookup: {
                     from: "subscriptions",
                     localField: "_id",
                     foreignField: "channel",
-                    as: "subscribers"
-                }
+                    as: "subscribers",
+                },
             },
             {
                 $lookup: {
                     from: "subscriptions",
                     localField: "_id",
                     foreignField: "subscriber",
-                    as: "subscribedTo"
-                }
+                    as: "subscribedTo",
+                },
             },
             {
                 $addFields: {
@@ -451,13 +531,13 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                     isSubscribed: {
                         $cond: {
                             if: {
-                                $in: [req.user?._id, "$subscribers.subscriber"]
+                                $in: [req.user?._id, "$subscribers.subscriber"],
                             },
                             then: true,
-                            else: false
-                        }
-                    }
-                }
+                            else: false,
+                        },
+                    },
+                },
             },
             {
                 $project: {
@@ -468,9 +548,9 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                     coverImage: 1,
                     totalSubscribers: 1,
                     totalSubscribedTo: 1,
-                    isSubscribed: 1
-                }
-            }
+                    isSubscribed: 1,
+                },
+            },
         ]);
 
         if (!channel?.length) {
@@ -479,7 +559,10 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
         res.status(200).json(new ApiResponse(200, "Channel found", channel[0]));
     } catch (error) {
-        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
     }
 });
 
@@ -488,8 +571,8 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         const user = await User.aggregate([
             {
                 $match: {
-                    _id: new mongoose.Types.ObjectId(req.user?._id)
-                }
+                    _id: new mongoose.Types.ObjectId(req.user?._id),
+                },
             },
             {
                 $lookup: {
@@ -509,25 +592,31 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                                         $project: {
                                             fullName: 1,
                                             username: 1,
-                                            avatar: 1
-                                        }
-                                    }
-                                ]
-                            }
+                                            avatar: 1,
+                                        },
+                                    },
+                                ],
+                            },
                         },
                         {
                             $addFields: {
                                 channelOwner: {
-                                    $first: "$channelOwner"
-                                }
-                            }
-                        }
-                    ]
-                }
+                                    $first: "$channelOwner",
+                                },
+                            },
+                        },
+                    ],
+                },
             },
-        ])
+        ]);
 
-        res.status(200).json(new ApiResponse(200, "Users watch history fetched successfully", user[0]?.watchedVideosHistory));
+        res.status(200).json(
+            new ApiResponse(
+                200,
+                "Users watch history fetched successfully",
+                user[0]?.watchedVideosHistory
+            )
+        );
     } catch (error) {
         throw new ApiError(500, error.message);
     }
@@ -544,5 +633,5 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannelProfile,
-    getWatchHistory
+    getWatchHistory,
 };

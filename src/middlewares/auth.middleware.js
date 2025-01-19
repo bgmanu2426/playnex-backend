@@ -7,13 +7,17 @@ import DATA from "../config.js";
 export const verifyJWT = asyncHandler(async (req, _, next) => {
     try {
         const accessToken =
-            req.cookies?.accessToken || req.headers["Authorization"]?.split(" ")[1];
-            
+            req.cookies?.accessToken ||
+            req.headers["Authorization"]?.split(" ")[1];
+
         if (!accessToken) {
             throw new ApiError(401, "Unauthorized Request");
         }
 
-        const decodedJWT = jwt.verify(accessToken, DATA.tokens.accessTokenSecret);
+        const decodedJWT = jwt.verify(
+            accessToken,
+            DATA.tokens.accessTokenSecret
+        );
 
         const user = await User.findById(decodedJWT?._id).select("-password");
 

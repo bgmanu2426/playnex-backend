@@ -1,8 +1,10 @@
 // Desc: Async Handler for Express Routes using Async/Await
 export const asyncHandler = (requestHandler) => {
-  return (req, res, next) => {
-    Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err));
-  };
+    return (req, res, next) => {
+        Promise.resolve(requestHandler(req, res, next)).catch((err) =>
+            next(err)
+        );
+    };
 };
 
 // Desc: Async Handler for Express Routes using try/catch
