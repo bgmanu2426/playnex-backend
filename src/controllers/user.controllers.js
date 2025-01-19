@@ -19,7 +19,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
         return { accessToken, refreshToken }
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating tokens");
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 }
 
@@ -50,7 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
             throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
         }
 
-        // Check if the user already exists in the database : username, email
+        // Check if the user already exists in the database : username or email
         const existingUser = await User.findOne({
             $or: [{ username }, { email }],
         });
@@ -59,7 +59,7 @@ const registerUser = asyncHandler(async (req, res) => {
             throw new ApiError(409, "User already exists");
         }
 
-        // if images exist, and upload to cloudinary
+        // if images exist, upload to cloudinary
         let coverImageLocalPath;
         if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
             coverImageLocalPath = req.files.coverImage[0].path;
@@ -101,18 +101,18 @@ const registerUser = asyncHandler(async (req, res) => {
             .status(201)
             .json(new ApiResponse(201, "User created successfully", createdUser));
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 });
 
 const loginUser = asyncHandler(async (req, res) => {
     try {
         // Get the required user data from the request body
-        const { email, username, password } = req.body;
+        const { email, password } = req.body;
 
         // Forms validation - Check for not empty, valid email, password length
-        if (!email && !username) {
-            throw new ApiError(400, "Email or Username is required");
+        if (!email) {
+            throw new ApiError(400, "Email is required");
         } else if (!password) {
             throw new ApiError(400, "Password is required");
         }
@@ -125,7 +125,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
         // Find the user in the database by email
         const user = await User.findOne({
-            $or: [{ email }, { username }],
+            $or: [{ email }],
         })
 
         // Check if the user exists in the database
@@ -163,7 +163,7 @@ const loginUser = asyncHandler(async (req, res) => {
                     }
                 ))
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 });
 
@@ -222,7 +222,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
                     }
                 ));
     } catch (error) {
-        throw new ApiError(401, error.message);
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 });
 
@@ -265,7 +265,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, "Password changed successfully"));
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 });
 
@@ -276,7 +276,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, "User found", req.user));
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 
 });
@@ -306,7 +306,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, "Account details updated successfully", updateduser));
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 });
 
@@ -349,7 +349,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, "User avatar updated successfully", user));
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 });
 
@@ -393,7 +393,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
             .status(200)
             .json(new ApiResponse(200, "User cover image updated successfully", user));
     } catch (error) {
-        throw new ApiError(500, error.message);
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 });
 
@@ -463,7 +463,8 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
         res.status(200).json(new ApiResponse(200, "Channel found", channel[0]));
     } catch (error) {
-        throw new ApiError(500, error.message);
+        console.log(error);
+        throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 });
 

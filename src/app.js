@@ -19,6 +19,7 @@ app.use(
     limit: "12kb",
   })
 );
+
 // use express.urlencoded() middleware to parse urlencoded data
 app.use(
   express.urlencoded({
@@ -34,5 +35,9 @@ import userRoutes from "./routes/user.routes.js";
 
 // Routes declaration
 app.use("/api/v1/users", userRoutes); // use user routes
+
+// Global Error Handling Middleware
+import errorMiddleware from "./middlewares/error.middleware.js";
+app.use(errorMiddleware);
 
 export { app }; // export the app object
