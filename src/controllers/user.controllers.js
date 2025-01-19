@@ -479,7 +479,6 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
         res.status(200).json(new ApiResponse(200, "Channel found", channel[0]));
     } catch (error) {
-        console.log(error);
         throw new ApiError(error?.statusCode || 500, error?.message || "Internal Server Error");
     }
 });
