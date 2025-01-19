@@ -169,6 +169,23 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const logoutUser = asyncHandler(async (req, res) => {
     // Clear the cookies and refresh token from the database
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset: {
+                refreshToken: 1 // this removes the field from document
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
     return res
         .status(200)
         .clearCookie("accessToken")
@@ -459,7 +476,6 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         if (!channel?.length) {
             throw new ApiError(404, "Channel not found");
         }
-        console.log(object);
 
         res.status(200).json(new ApiResponse(200, "Channel found", channel[0]));
     } catch (error) {
