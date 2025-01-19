@@ -75,13 +75,13 @@ userSchema.methods.generateAccessToken = function () {
             expiresIn: DATA.tokens.accessTokenExpiration,
         },
         {
-            algorithm: "SHA256",
+            algorithm: "HS256",
         }
     );
 }; // Generate access token
 
 userSchema.methods.generateRefreshToken = function () {
-    return jwt.sign({ _id: this._id }, DATA.tokens.accessTokenSecret, {
+    return jwt.sign({ _id: this._id }, DATA.tokens.refreshTokenSecret, {
         expiresIn: DATA.tokens.refreshTokenExpiration,
     });
 }; // Generate refresh token
