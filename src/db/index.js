@@ -1,12 +1,11 @@
 import mongoose from "mongoose"; // Import mongoose
-import { DB_NAME } from "../constants.js"; // Import DB_NAME from constants.js
+import DATA from "../config.js";
 
 // Connect to MongoDB
-
 const connectToDB = async () => {
   try {
     const connectionInstance = await mongoose.connect(
-      `${process.env.MONGO_URI}/${DB_NAME}`
+      `${DATA.database.uri}/${DATA.database.name}`,
     );
     console.log(
       `\n MongoDB connected successfully !!!  DB HOST: ${connectionInstance.connection.host}`
@@ -23,7 +22,7 @@ export default connectToDB;
 ;(
     async () => {
         try {
-            await mongoose.connect(`${process.env.MONGO_URI}/${DB_NAME}`)
+            await mongoose.connect(`${DATA.database.uri}/${DATA.database.name}`)
         } catch (error) {
             console.error("Error: ", error);
             throw new Error(error);

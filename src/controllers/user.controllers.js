@@ -4,6 +4,7 @@ import { User } from "../models/user.models.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/fileUpload.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import DATA from "../config.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -22,140 +23,147 @@ const generateAccessAndRefreshTokens = async (userId) => {
 }
 
 const registerUser = asyncHandler(async (req, res) => {
-    // Get the required user data from the request body
-    const { fullName, username, email, password } = req.body;
-    // console.log(fullName, username, email, password);
+    try {
+        // Get the required user data from the request body
+        const { fullName, username, email, password } = req.body;
+        // console.log(fullName, username, email, password);
 
-    // Forms validation - Check for not empty, valid email, password length
-    // if (
-    //     [fullName, username, email].some((field) => field?.trim() === "")
-    // ) {
-    //     throw new ApiError(400, "All fields are required");
-    // }
+        // Forms validation - Check for not empty, valid email, password length
+        // if (
+        //     [fullName, username, email].some((field) => field?.trim() === "")
+        // ) {
+        //     throw new ApiError(400, "All fields are required");
+        // }
 
-    if (!fullName) {
-        throw new ApiError(400, "Full name is required");
-    } else if (!username) {
-        throw new ApiError(400, "Username is required");
-    } else if (!email) {
-        throw new ApiError(400, "Email is required");
+        if (!fullName) {
+            throw new ApiError(400, "Full name is required");
+        } else if (!username) {
+            throw new ApiError(400, "Username is required");
+        } else if (!email) {
+            throw new ApiError(400, "Email is required");
+        }
+
+
+        const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+        if (!passwordRegex.test(password)) {
+            throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
+        }
+
+        // Check if the user already exists in the database : username, email
+        const existingUser = await User.findOne({
+            $or: [{ username }, { email }],
+        });
+
+        if (existingUser) {
+            throw new ApiError(409, "User already exists");
+        }
+
+        // if images exist, and upload to cloudinary
+        let coverImageLocalPath;
+        if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+            coverImageLocalPath = req.files.coverImage[0].path;
+        }
+
+        const avatarLocalPath = req.files?.avatar[0]?.path;
+        if (!avatarLocalPath) {
+            throw new ApiError(400, "Avatar is required");
+        }
+
+        const avatar = await uploadOnCloudinary(avatarLocalPath, "avatar"); // upload the avatar to cloudinary
+        const coverImage = await uploadOnCloudinary(coverImageLocalPath, "coverImage"); // upload the cover image to cloudinary
+
+        if (!avatar) {
+            throw new ApiError(500, "Avatar upload failed");
+        }
+
+        // Create a new user object and check if the user is saved to the database
+        const user = await User.create({
+            fullName,
+            username: username.toLowerCase(),
+            email: email.toLowerCase(),
+            password,
+            avatar: avatar.secure_url,
+            coverImage: coverImage?.secure_url || "",
+        });
+
+        // remove the sensitive data from the user object like password, refreshToken
+        const createdUser = await User.findById(user._id).select(
+            "-password -refreshToken"
+        );
+
+        if (!createdUser) {
+            throw new ApiError(500, "User creation failed");
+        }
+
+        // return the response
+        return res
+            .status(201)
+            .json(new ApiResponse(201, "User created successfully", createdUser));
+    } catch (error) {
+        throw new ApiError(500, error.message);
     }
-
-
-    const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
-    if (!passwordRegex.test(password)) {
-        throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
-    }
-
-    // Check if the user already exists in the database : username, email
-    const existingUser = await User.findOne({
-        $or: [{ username }, { email }],
-    });
-
-    if (existingUser) {
-        throw new ApiError(409, "User already exists");
-    }
-
-    // if images exist, and upload to cloudinary
-    let coverImageLocalPath;
-    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
-        coverImageLocalPath = req.files.coverImage[0].path;
-    }
-
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    if (!avatarLocalPath) {
-        throw new ApiError(400, "Avatar is required");
-    }
-
-    const avatar = await uploadOnCloudinary(avatarLocalPath, "avatar"); // upload the avatar to cloudinary
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath, "coverImage"); // upload the cover image to cloudinary
-
-    if (!avatar) {
-        throw new ApiError(500, "Avatar upload failed");
-    }
-
-    // Create a new user object and check if the user is saved to the database
-    const user = await User.create({
-        fullName,
-        username: username.toLowerCase(),
-        email: email.toLowerCase(),
-        password,
-        avatar: avatar.secure_url,
-        coverImage: coverImage?.secure_url || "",
-    });
-
-    // remove the sensitive data from the user object like password, refreshToken
-    const createdUser = await User.findById(user._id).select(
-        "-password -refreshToken"
-    );
-
-    if (!createdUser) {
-        throw new ApiError(500, "User creation failed");
-    }
-
-    // return the response
-    return res
-        .status(201)
-        .json(new ApiResponse(201, "User created successfully", createdUser));
 });
 
-
 const loginUser = asyncHandler(async (req, res) => {
-    // Get the required user data from the request body
-    const { email, username, password } = req.body;
+    try {
+        // Get the required user data from the request body
+        const { email, username, password } = req.body;
 
-    // Forms validation - Check for not empty, valid email, password length
-    if (!email && !username) {
-        throw new ApiError(400, "Email or Username is required");
-    } else if (!password) {
-        throw new ApiError(400, "Password is required");
+        // Forms validation - Check for not empty, valid email, password length
+        if (!email && !username) {
+            throw new ApiError(400, "Email or Username is required");
+        } else if (!password) {
+            throw new ApiError(400, "Password is required");
+        }
+
+
+        const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+        if (!passwordRegex.test(password)) {
+            throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
+        }
+
+        // Find the user in the database by email
+        const user = await User.findOne({
+            $or: [{ email }, { username }],
+        })
+
+        // Check if the user exists in the database
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+
+        // Compare the password with the one in the database
+        const verifyPassword = await user.isPasswordCorrect(password);
+        if (!verifyPassword) {
+            throw new ApiError(401, "Invalid user Credentials");
+        }
+
+        // Generate access token and refresh token
+        const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+
+        // Send cookies with access token and refresh token and return the response
+        const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+
+        return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    "User LoggedIn Successfully",
+                    {
+                        user: loggedInUser, accessToken, refreshToken
+                    }
+                ))
+    } catch (error) {
+        throw new ApiError(500, error.message);
     }
-
-
-    const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
-    if (!passwordRegex.test(password)) {
-        throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
-    }
-
-    // Find the user in the database by email
-    const user = await User.findOne({
-        $or: [{ email }, { username }],
-    })
-
-    // Check if the user exists in the database
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-
-    // Compare the password with the one in the database
-    const verifyPassword = await user.isPasswordCorrect(password);
-    if (!verifyPassword) {
-        throw new ApiError(401, "Invalid user Credentials");
-    }
-
-    // Generate access token and refresh token
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
-
-    // Send cookies with access token and refresh token and return the response
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
-
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
-
-    return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
-        .json(
-            new ApiResponse(
-                200,
-                "User LoggedIn Successfully",
-                {
-                    user: loggedInUser, accessToken, refreshToken
-                }
-            ))
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -178,7 +186,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     try {
         // Verify the refresh token which returns the user id
-        const decoded = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const decoded = jwt.verify(incomingRefreshToken, DATA.tokens.refreshTokenSecret);
 
         // Find the user in the database by id
         const user = await User.findById(decoded?._id);
@@ -218,153 +226,174 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
-    const { currentPassword, newPassword } = req.body; // Get the required user data from the request body
+    try {
+        const { currentPassword, newPassword } = req.body; // Get the required user data from the request body
 
-    // if (newPassword !== confirmPassword) {
-    //     throw new ApiError(400, "Passwords do not match");
-    // }
+        // if (newPassword !== confirmPassword) {
+        //     throw new ApiError(400, "Passwords do not match");
+        // }
 
-    // Forms validation - Check for not empty, valid email, password length
-    if (!currentPassword) {
-        throw new ApiError(400, "Current Password is required");
-    } else if (!newPassword) {
-        throw new ApiError(400, "New Password is required");
+        // Forms validation - Check for not empty, valid email, password length
+        if (!currentPassword) {
+            throw new ApiError(400, "Current Password is required");
+        } else if (!newPassword) {
+            throw new ApiError(400, "New Password is required");
+        }
+
+        // Check if the new password meets the required criteria
+        const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+        if (!passwordRegex.test(newPassword)) {
+            throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
+        }
+
+        // Find the user in the database by id
+        const user = await User.findById(req.user?._id);
+        const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
+
+        if (!isPasswordCorrect) {
+            throw new ApiError(401, "Invalid current password");
+        }
+
+        user.password = newPassword;
+
+        // Save the updated user object to the database
+        await user.save({ validateBeforeSave: false });
+
+        // return the response
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "Password changed successfully"));
+    } catch (error) {
+        throw new ApiError(500, error.message);
     }
-
-    // Check if the new password meets the required criteria
-    const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
-    if (!passwordRegex.test(newPassword)) {
-        throw new ApiError(400, "Password should be at least 8 characters long, and contain at least one uppercase, one lowercase, one digit, and one special character");
-    }
-
-    // Find the user in the database by id
-    const user = await User.findById(req.user?._id);
-    const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
-
-    if (!isPasswordCorrect) {
-        throw new ApiError(401, "Invalid current password");
-    }
-
-    user.password = newPassword;
-
-    // Save the updated user object to the database
-    await user.save({ validateBeforeSave: false });
-
-    // return the response
-    return res
-        .status(200)
-        .json(new ApiResponse(200, "Password changed successfully"));
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-    // return the response
-    return res
-        .status(200)
-        .json(new ApiResponse(200, "User found", req.user));
+    try {
+        // return the response
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "User found", req.user));
+    } catch (error) {
+        throw new ApiError(500, error.message);
+    }
+
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const { fullName, email } = req.body; // Get the required user data from the request body
+    try {
+        const { fullName, email } = req.body; // Get the required user data from the request body
 
-    // Forms validation - Check for not empty, valid email or full name
-    if (!fullName || !email) {
-        throw new ApiError(400, "Full name or email are required");
+        // Forms validation - Check for not empty, valid email or full name
+        if (!fullName || !email) {
+            throw new ApiError(400, "Full name or email are required");
+        }
+
+        // Check if the user already exists in the database : username, email
+        const updateduser = await User.findByIdAndUpdate(
+            req.user?._id,
+            {
+                $set: {
+                    fullName,
+                    email
+                }
+            }, { new: true }
+        ).select("-password -refreshToken");
+
+        // return the response
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "Account details updated successfully", updateduser));
+    } catch (error) {
+        throw new ApiError(500, error.message);
     }
-
-    // Check if the user already exists in the database : username, email
-    const updateduser = await User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set: {
-                fullName,
-                email
-            }
-        }, { new: true }
-    ).select("-password -refreshToken");
-
-    // return the response
-    return res
-        .status(200)
-        .json(new ApiResponse(200, "Account details updated successfully", updateduser));
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
 
-    // if images exist, and upload to cloudinary
-    const avatarLocalPath = req.file?.path;
-    if (!avatarLocalPath) {
-        throw new ApiError(400, "Avatar is required");
-    }
-
-    // Delete the old avatar from cloudinary
-    const oldAvatar = await User.findById(req.user?._id).select("avatar");
-
-    if (oldAvatar?.avatar) {
-        const publicId = oldAvatar.avatar.split("/").pop()?.split(".")[0];
-        const deleteAvatar = await deleteFromCloudinary(publicId, "avatar");
-    }
-
-    const avatar = await uploadOnCloudinary(avatarLocalPath, "avatar"); // upload the avatar to cloudinary
-
-    if (!avatar) {
-        throw new ApiError(500, "Avatar upload failed");
-    }
-
-    // Create a new user object and check if the user is saved to the database
-    const user = await User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set: {
-                avatar: avatar.secure_url || "",
-            }
+    try {
+        // if images exist, and upload to cloudinary
+        const avatarLocalPath = req.file?.path;
+        if (!avatarLocalPath) {
+            throw new ApiError(400, "Avatar is required");
         }
-        , { new: true }
-    ).select("-password -refreshToken");
 
-    // return the response
-    return res
-        .status(200)
-        .json(new ApiResponse(200, "User avatar updated successfully", user));
+        // Delete the old avatar from cloudinary
+        const oldAvatar = await User.findById(req.user?._id).select("avatar");
+
+        if (oldAvatar?.avatar) {
+            const publicId = oldAvatar.avatar.split("/").pop()?.split(".")[0];
+            const deleteAvatar = await deleteFromCloudinary(publicId, "avatar");
+        }
+
+        const avatar = await uploadOnCloudinary(avatarLocalPath, "avatar"); // upload the avatar to cloudinary
+
+        if (!avatar) {
+            throw new ApiError(500, "Avatar upload failed");
+        }
+
+        // Create a new user object and check if the user is saved to the database
+        const user = await User.findByIdAndUpdate(
+            req.user?._id,
+            {
+                $set: {
+                    avatar: avatar.secure_url || "",
+                }
+            }
+            , { new: true }
+        ).select("-password -refreshToken");
+
+        // return the response
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "User avatar updated successfully", user));
+    } catch (error) {
+        throw new ApiError(500, error.message);
+    }
 });
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
 
-    // if images exist, and upload to cloudinary
-    const coverImagePath = req.file?.path;
-    console.log(coverImagePath);
-    if (!coverImagePath) {
-        throw new ApiError(400, "Cover image is required");
-    }
+    try {
+        // if images exist, and upload to cloudinary
+        const coverImagePath = req.file?.path;
 
-    // Delete the old cover image from cloudinary
-    const oldCoverImage = await User.findById(req.user?._id).select("coverImage");
-
-    if (oldCoverImage?.coverImage) {
-        const publicId = oldCoverImage.coverImage.split("/").pop()?.split(".")[0];
-        const deleteCoverImage = await deleteFromCloudinary(publicId, "coverImage");
-    }
-
-    const coverImage = await uploadOnCloudinary(coverImagePath, "coverImage"); // upload the avatar to cloudinary
-
-    if (!coverImage) {
-        throw new ApiError(500, "Cover image upload failed");
-    }
-
-    // Create a new user object and check if the user is saved to the database
-    const user = await User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set: {
-                coverImage: coverImage.secure_url || "",
-            }
+        if (!coverImagePath) {
+            throw new ApiError(400, "Cover image is required");
         }
-        , { new: true }
-    ).select("-password -refreshToken");
 
-    // return the response
-    return res
-        .status(200)
-        .json(new ApiResponse(200, "User cover image updated successfully", user));
+        // Delete the old cover image from cloudinary
+        const oldCoverImage = await User.findById(req.user?._id).select("coverImage");
+
+        if (oldCoverImage?.coverImage) {
+            const publicId = oldCoverImage.coverImage.split("/").pop()?.split(".")[0];
+            const deleteCoverImage = await deleteFromCloudinary(publicId, "coverImage");
+        }
+
+        const coverImage = await uploadOnCloudinary(coverImagePath, "coverImage"); // upload the avatar to cloudinary
+
+        if (!coverImage) {
+            throw new ApiError(500, "Cover image upload failed");
+        }
+
+        // Create a new user object and check if the user is saved to the database
+        const user = await User.findByIdAndUpdate(
+            req.user?._id,
+            {
+                $set: {
+                    coverImage: coverImage.secure_url || "",
+                }
+            }
+            , { new: true }
+        ).select("-password -refreshToken");
+
+        // return the response
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "User cover image updated successfully", user));
+    } catch (error) {
+        throw new ApiError(500, error.message);
+    }
 });
 
 export {

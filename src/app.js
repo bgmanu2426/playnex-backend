@@ -1,13 +1,14 @@
 import express from "express"; // import express from express
 import cors from "cors"; // import cors from cors
 import cookieParser from "cookie-parser"; // import cookieParser from cookie-parser
+import DATA from "./config.js";
 
 const app = express(); // create an express app
 
 // use cross-origin-resource-sharing middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: DATA.client_url,
     credentials: true,
   })
 );
