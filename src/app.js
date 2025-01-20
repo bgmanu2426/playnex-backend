@@ -1,6 +1,8 @@
 import express from "express"; // import express from express
 import cors from "cors"; // import cors from cors
 import cookieParser from "cookie-parser"; // import cookieParser from cookie-parser
+import swaggerjsdoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
 import DATA from "./config.js";
 
 const app = express(); // create an express app
@@ -29,6 +31,30 @@ app.use(
 );
 app.use(express.static("public")); // use express.static() middleware to serve static files
 app.use(cookieParser()); // use cookieParser() middleware to parse cookies
+
+// Swagger setup
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Youtube Clone API',
+            description: 'Youtube Clone API Information for developers',
+            contact: {
+                name: 'Lakshminarayana'
+            },
+        },
+        servers: [
+            {
+                url: "http://localhost:8000/api/v1"
+            }
+        ],
+    },
+    apis: ['./src/routes/*.js']
+}
+
+const swaggerDocs = swaggerjsdoc(swaggerOptions)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+
 
 // Routes
 import userRoutes from "./routes/user.route.js";

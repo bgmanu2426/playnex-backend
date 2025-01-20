@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
-import { User } from "../models/user.models.js";
+import { User } from "../models/user.model.js";
 import {
     deleteFromCloudinary,
     uploadOnCloudinary,
@@ -28,6 +28,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
         );
     }
 };
+
 
 const registerUser = asyncHandler(async (req, res) => {
     try {
@@ -168,6 +169,7 @@ const loginUser = asyncHandler(async (req, res) => {
         // Generate access token and refresh token
         const { accessToken, refreshToken } =
             await generateAccessAndRefreshTokens(user._id);
+
 
         // Send cookies with access token and refresh token and return the response
         const loggedInUser = await User.findById(user._id).select(
@@ -350,7 +352,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         const { fullName, email } = req.body; // Get the required user data from the request body
 
         // Forms validation - Check for not empty, valid email or full name
-        if (!fullName || !email) {
+        if (!fullName && !email) {
             throw new ApiError(400, "Full name or email are required");
         }
 

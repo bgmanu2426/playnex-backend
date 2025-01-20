@@ -73,17 +73,20 @@ userSchema.methods.generateAccessToken = function () {
         DATA.tokens.accessTokenSecret,
         {
             expiresIn: DATA.tokens.accessTokenExpiration,
-        },
-        {
             algorithm: "HS256",
         }
     );
 }; // Generate access token
 
 userSchema.methods.generateRefreshToken = function () {
-    return jwt.sign({ _id: this._id }, DATA.tokens.refreshTokenSecret, {
-        expiresIn: DATA.tokens.refreshTokenExpiration,
-    });
+    return jwt.sign(
+        { _id: this._id },
+        DATA.tokens.refreshTokenSecret,
+        {
+            expiresIn: DATA.tokens.refreshTokenExpiration,
+            algorithm: "HS256", // Ensure algorithm consistency
+        }
+    );
 }; // Generate refresh token
 
 export const User = mongoose.model("User", userSchema);
