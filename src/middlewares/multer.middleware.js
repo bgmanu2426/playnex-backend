@@ -10,6 +10,10 @@ const storage = multer.diskStorage({
     },
 }); // Destination to store video on server
 
+/**
+ * Multer middleware for handling file uploads
+ * @type {multer.Instance}
+ */
 export const upload = multer({
     storage: storage,
     limits: {

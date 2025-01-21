@@ -138,7 +138,7 @@ router.route("/register").post(
  *         description: Internal server error
  */
 
-router.route("/login").post(upload.none(),loginUser);
+router.route("/login").post(upload.none(), loginUser);
 
 // secured routes
 
@@ -197,7 +197,7 @@ router.route("/refresh-token").post(refreshAccessToken);
  * /users/change-password:
  *   patch:
  *     tags:
- *       - 🔐 Authentication
+ *       - 👤 User Managment
  *     summary: Change current user's password.
  *     description: Allows the authenticated user to change their password.
  *     security:
@@ -241,7 +241,7 @@ router.route("/change-password").patch(verifyJWT, changeCurrentPassword);
  * /users/current-user:
  *   get:
  *     tags:
- *       - 🔐 Authentication
+ *       - 👤 User Managment
  *     summary: Get current authenticated user.
  *     description: Retrieves information about the authenticated user.
  *     security:
@@ -262,7 +262,7 @@ router.route("/current-user").get(verifyJWT, getCurrentUser);
  * /users/update-user:
  *   patch:
  *     tags:
- *       - 🔐 Authentication
+ *       - 👤 User Managment
  *     summary: Update user account details.
  *     description: Allows the authenticated user to update their account information.
  *     security:
@@ -301,7 +301,7 @@ router.route("/update-user").patch(verifyJWT, updateAccountDetails);
  * /users/update-avatar:
  *   patch:
  *     tags:
- *       - 🔐 Authentication
+ *       - 👤 User Managment
  *     summary: Update user avatar.
  *     description: Allows the authenticated user to update their avatar image.
  *     security:
@@ -338,7 +338,7 @@ router
  * /users/update-cover-image:
  *   patch:
  *     tags:
- *       - 🔐 Authentication
+ *       - 👤 User Managment
  *     summary: Update user cover image.
  *     description: Allows the authenticated user to update their cover image.
  *     security:
@@ -375,7 +375,7 @@ router
  * /users/c/{username}:
  *   get:
  *     tags:
- *       - 🔐 Authentication
+ *       - 👤 User Managment
  *     summary: Get user channel profile.
  *     description: Retrieves the channel profile of a user based on their username.
  *     security:
@@ -408,7 +408,7 @@ router.route("/c/:username").get(verifyJWT, getUserChannelProfile);
  * /users/watchHistory:
  *   get:
  *     tags:
- *       - 🔐 Authentication
+ *       - 👤 User Managment
  *     summary: Get user's watch history.
  *     description: Retrieves the authenticated user's watch history.
  *     security:

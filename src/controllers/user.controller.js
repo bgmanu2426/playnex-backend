@@ -29,7 +29,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
     }
 };
 
-
 const registerUser = asyncHandler(async (req, res) => {
     try {
         // Get the required user data from the request body
@@ -169,7 +168,6 @@ const loginUser = asyncHandler(async (req, res) => {
         // Generate access token and refresh token
         const { accessToken, refreshToken } =
             await generateAccessAndRefreshTokens(user._id);
-
 
         // Send cookies with access token and refresh token and return the response
         const loggedInUser = await User.findById(user._id).select(
