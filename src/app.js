@@ -59,15 +59,6 @@ const swaggerOptions = {
                 url: "http://localhost:8000/api/v1",
             },
         ],
-        components: {
-            securitySchemes: {
-                bearerAuth: {
-                    type: "http",
-                    scheme: "bearer",
-                    bearerFormat: "JWT",
-                },
-            },
-        },
     },
     apis: ["./src/routes/*.js"], // Path to the API docs
 };

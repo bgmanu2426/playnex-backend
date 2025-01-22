@@ -86,7 +86,6 @@ userSchema.methods.generateAccessToken = function () {
         DATA.tokens.accessTokenSecret,
         {
             expiresIn: DATA.tokens.accessTokenExpiration,
-            algorithm: "SHA256", // Ensure algorithm consistency
         }
     );
 };
@@ -101,7 +100,6 @@ userSchema.methods.generateRefreshToken = function () {
         DATA.tokens.refreshTokenSecret,
         {
             expiresIn: DATA.tokens.refreshTokenExpiration,
-            algorithm: "SHA256", // Ensure algorithm consistency
         }
     );
 };
