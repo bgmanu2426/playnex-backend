@@ -52,16 +52,29 @@ const userSchema = new mongoose.Schema(
     }
 );
 
+/**
+ * Hash password before saving to database
+ * @param {Function} next - The next middleware function
+ */
 userSchema.pre("save", function (next) {
     if (!this.isModified("password")) return next();
     this.password = bcrypt.hashSync(this.password, 10);
     next();
-}); // Hash password before saving to database
+});
 
+/**
+ * Compare password with the one in the database
+ * @param {string} password - The password to compare
+ * @returns {boolean} - True if the password matches, false otherwise
+ */
 userSchema.methods.isPasswordCorrect = function (password) {
     return bcrypt.compareSync(password, this.password);
-}; // Compare password with the one in the database
+};
 
+/**
+ * Generate access token
+ * @returns {string} - The generated access token
+ */
 userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
@@ -73,20 +86,24 @@ userSchema.methods.generateAccessToken = function () {
         DATA.tokens.accessTokenSecret,
         {
             expiresIn: DATA.tokens.accessTokenExpiration,
-            algorithm: "HS256",
+            algorithm: "SHA256", // Ensure algorithm consistency
         }
     );
-}; // Generate access token
+};
 
+/**
+ * Generate refresh token
+ * @returns {string} - The generated refresh token
+ */
 userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         { _id: this._id },
         DATA.tokens.refreshTokenSecret,
         {
             expiresIn: DATA.tokens.refreshTokenExpiration,
-            algorithm: "HS256", // Ensure algorithm consistency
+            algorithm: "SHA256", // Ensure algorithm consistency
         }
     );
-}; // Generate refresh token
+};
 
 export const User = mongoose.model("User", userSchema);
