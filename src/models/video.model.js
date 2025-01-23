@@ -7,6 +7,10 @@ const videoSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        videoPublicId: {
+            type: String,
+            required: true,
+        },
         thumbnail: {
             type: String,
             required: true,
