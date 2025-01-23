@@ -1,4 +1,8 @@
-// Desc: Async Handler for Express Routes using Async/Await
+/**
+ * Async Handler for Express Routes using Async/Await
+ * @param {Function} requestHandler - The async route handler function
+ * @returns {Function} - A function that wraps the route handler with error handling
+ */
 export const asyncHandler = (requestHandler) => {
     return (req, res, next) => {
         Promise.resolve(requestHandler(req, res, next)).catch((err) =>

@@ -10,6 +10,12 @@ import jwt from "jsonwebtoken";
 import DATA from "../config.js";
 import mongoose from "mongoose";
 
+/**
+ * Generates access and refresh tokens for a user
+ * @param {string} userId - The ID of the user
+ * @returns {Object} - An object containing accessToken and refreshToken
+ * @throws {ApiError} - If token generation fails
+ */
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -29,6 +35,13 @@ const generateAccessAndRefreshTokens = async (userId) => {
     }
 };
 
+/**
+ * Registers a new user
+ * @param {Object} req - The request object containing user data
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ * @throws {ApiError} - If registration fails
+ */
 const registerUser = asyncHandler(async (req, res) => {
     try {
         // Get the required user data from the request body
@@ -127,6 +140,13 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * Logs in a user
+ * @param {Object} req - The request object containing login credentials
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ * @throws {ApiError} - If login fails
+ */
 const loginUser = asyncHandler(async (req, res) => {
     try {
         // Get the required user data from the request body
@@ -198,6 +218,12 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * Logs out a user by clearing tokens
+ * @param {Object} req - The authenticated request object
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ */
 const logoutUser = asyncHandler(async (req, res) => {
     // Clear the cookies and refresh token from the database
     await User.findByIdAndUpdate(
@@ -224,6 +250,13 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, "User Logged Out Successfully"));
 });
 
+/**
+ * Refreshes the access token using a valid refresh token
+ * @param {Object} req - The request object containing refresh token
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ * @throws {ApiError} - If refresh token is invalid
+ */
 const refreshAccessToken = asyncHandler(async (req, res) => {
     // Get the refresh token from the request cookies
     const incomingRefreshToken =
@@ -280,6 +313,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * Changes the current user's password
+ * @param {Object} req - The request object containing current and new passwords
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ * @throws {ApiError} - If password change fails
+ */
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body; // Get the required user data from the request body
@@ -331,6 +371,12 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * Retrieves the current authenticated user
+ * @param {Object} req - The authenticated request object
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ */
 const getCurrentUser = asyncHandler(async (req, res) => {
     try {
         // return the response
@@ -345,6 +391,13 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * Updates the user's account details
+ * @param {Object} req - The request object containing updated details
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ * @throws {ApiError} - If update fails
+ */
 const updateAccountDetails = asyncHandler(async (req, res) => {
     try {
         const { fullName, email } = req.body; // Get the required user data from the request body
@@ -384,6 +437,13 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * Updates the user's avatar
+ * @param {Object} req - The request object containing new avatar
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ * @throws {ApiError} - If avatar update fails
+ */
 const updateUserAvatar = asyncHandler(async (req, res) => {
     try {
         // if images exist, and upload to cloudinary
@@ -431,6 +491,13 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * Updates the user's cover image
+ * @param {Object} req - The request object containing new cover image
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ * @throws {ApiError} - If cover image update fails
+ */
 const updateUserCoverImage = asyncHandler(async (req, res) => {
     try {
         // if images exist, and upload to cloudinary
@@ -494,6 +561,13 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * Retrieves a user's channel profile based on username
+ * @param {Object} req - The request object containing the username parameter
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ * @throws {ApiError} - If channel retrieval fails
+ */
 const getUserChannelProfile = asyncHandler(async (req, res) => {
     try {
         const { username } = req.params;
@@ -566,6 +640,13 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * Retrieves the authenticated user's watch history
+ * @param {Object} req - The authenticated request object
+ * @param {Object} res - The response object
+ * @returns {Promise<void>}
+ * @throws {ApiError} - If retrieval fails
+ */
 const getWatchHistory = asyncHandler(async (req, res) => {
     try {
         const user = await User.aggregate([

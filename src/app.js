@@ -18,7 +18,9 @@ import databaseRoutes from "./routes/database.route.js";
 
 const app = express();
 
-// CORS Middleware
+/**
+ * Initialize CORS middleware
+ */
 app.use(
     cors({
         origin: DATA.client_url,
@@ -26,7 +28,9 @@ app.use(
     })
 );
 
-// Body Parsing Middleware
+/**
+ * Initialize body parsing middleware for JSON
+ */
 app.use(
     express.json({
         limit: "12kb",
@@ -43,7 +47,9 @@ app.use(
 app.use(express.static("public")); // Serve static files
 app.use(cookieParser()); // Parse cookies
 
-// Swagger setup
+/**
+ * Configure Swagger options
+ */
 const swaggerOptions = {
     swaggerDefinition: {
         openapi: "3.0.0",
@@ -66,7 +72,9 @@ const swaggerOptions = {
 const swaggerDocs = swaggerjsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Routes declaration
+/**
+ * Declare API routes
+ */
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/videos", videoRoutes);
 app.use("/api/v1/comments", commentRoutes);

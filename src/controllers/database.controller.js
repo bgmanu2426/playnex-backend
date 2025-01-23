@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import { deleteAllFilesFromCloudinary } from "../utils/fileUpload.js";
 
 /**
  * @desc    Empty the entire database by deleting all documents from all collections
@@ -18,6 +19,9 @@ const emptyDatabase = asyncHandler(async (req, res) => {
                 await collections[key].deleteMany({});
             }
         }
+
+        // Delete all the resources from the cloudinary
+        await deleteAllFilesFromCloudinary();
 
         return res.status(200).json(
             new ApiResponse(200, "Database emptied successfully")

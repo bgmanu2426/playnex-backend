@@ -1,4 +1,15 @@
+/**
+ * Class representing a standardized API error.
+ * @extends Error
+ */
 class ApiError extends Error {
+    /**
+     * Create an ApiError.
+     * @param {number} statusCode - The HTTP status code.
+     * @param {string} [message="Something went wrong"] - The error message.
+     * @param {Array} [errors=[]] - Additional error details.
+     * @param {string} [stack=""] - The stack trace.
+     */
     constructor(
         statusCode,
         message = "Something went wrong",

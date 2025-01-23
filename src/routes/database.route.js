@@ -14,22 +14,10 @@ const router = Router();
  *     responses:
  *       '200':
  *         description: Database emptied successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
  *       '401':
  *         description: Unauthorized - Invalid token or insufficient permissions
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
  *       '500':
  *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
  */
 
 // Apply authentication middleware

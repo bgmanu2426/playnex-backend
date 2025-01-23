@@ -4,7 +4,7 @@ dotenv.config(); // Load environment variables from .env file
 /**
  * Configuration object containing environment variables
  * @type {Object}
- * @property {number} port - The port number (used in development)
+ * @property {number} port - The port number for the server
  * @property {string} client_url - The client URL
  * @property {Object} cloudinary - Cloudinary configuration
  * @property {string} cloudinary.cloud_name - Cloudinary cloud name
@@ -20,7 +20,7 @@ dotenv.config(); // Load environment variables from .env file
  * @property {string} tokens.refreshTokenExpiration - Refresh token expiration
  */
 const DATA = {
-    port: process.env.PORT,
+    port: process.env.PORT || 8000,
     client_url: process.env.CLIENT_URL,
     cloudinary: {
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
