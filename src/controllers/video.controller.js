@@ -7,10 +7,58 @@ import { User } from "../models/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query; // Page and limit are used for pagination and they are optional parameters
-    //TODO: get all videos based on query, sort, pagination
+    try {
+        const { page = 1, limit = 10, query, sortBy = 'newest' } = req.query; // Pagination and sorting parameters
 
+        // Define sorting options
+        let sortOption;
+        switch (sortBy.toLowerCase()) {
+            case 'views':
+                sortOption = { views: -1 }; // Descending order of views
+                break;
+            case 'older':
+                sortOption = { createdAt: 1 }; // Ascending order of creation date
+                break;
+            case 'newest':
+            default:
+                sortOption = { createdAt: -1 }; // Descending order of creation date
+        }
 
+        // Build the filter object based on the query
+        const filter = {};
+        if (query) {
+            filter.title = { $regex: query, $options: 'i' }; // Case-insensitive search on title
+        }
+
+        // Fetch videos with applied filters, sorting, and pagination
+        const videos = await Video.find(filter)
+            .sort(sortOption)
+            .skip((page - 1) * limit)
+            .limit(Number(limit))
+            .populate("owner", "fullName username avatar"); // Populate owner details
+
+        // Get total count for pagination
+        const totalVideos = await Video.countDocuments(filter);
+        const totalPages = Math.ceil(totalVideos / limit);
+
+        // Respond with videos and pagination info
+        return res.status(200).json(
+            new ApiResponse(200, "Videos fetched successfully", {
+                videos,
+                pagination: {
+                    total: totalVideos,
+                    page: Number(page),
+                    limit: Number(limit),
+                    totalPages,
+                },
+            })
+        );
+    } catch (error) {
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
+    }
 });
 
 const publishAVideo = asyncHandler(async (req, res) => {
@@ -69,8 +117,10 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
     try {
         const { videoId } = req.params;
+        
+        // TODO: Get the videos likes comments and also the users subscribers count
 
-        if ([videoId].map((field) => field.trim()).includes("")) {
+        if ([videoId].map((field) => field.trim()).includes("") || !isValidObjectId(videoId)) {
             throw new ApiError(400, "Invalid Video ID");
         }
 
@@ -125,6 +175,19 @@ const getVideoById = asyncHandler(async (req, res) => {
 const updateVideo = asyncHandler(async (req, res) => {
     try {
         const { videoId } = req.params;
+
+        // Check if the owner id in the video is the same as the user id currently logged in
+
+        const videoOwner = await Video.findById(videoId).select("owner thumbnailPublicId");
+
+        if (!videoOwner) {
+            throw new ApiError(404, "Video not found");
+        }
+
+        if (videoOwner.owner.toString() !== req.user?._id.toString()) {
+            throw new ApiError(401, "Unauthorized Request");
+        }
+
         const { title, description } = req.body;
         const thumbnailLocalPath = req.file.path;
         let thumbnail;
@@ -136,7 +199,6 @@ const updateVideo = asyncHandler(async (req, res) => {
         }
 
         // delete the old thumbnail from cloudinary
-        const thumbnailPublicId = await Video.findById(videoId).select("thumbnailPublicId");
         const updateThumbnail = await deleteFromCloudinary(thumbnailPublicId?.thumbnailPublicId);
 
         if (updateThumbnail?.result !== "ok") {
@@ -205,12 +267,60 @@ const deleteVideo = asyncHandler(async (req, res) => {
             error?.statusCode || 500,
             error?.message || "Internal Server Error"
         );
-
     }
 });
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
-    const { videoId } = req.params;
+    try {
+        const { videoId } = req.params;
+        // check if the owner id in the video is the same as the user id in the token if yes then only toggle the publish status    
+
+        const videoOwner = await Video.findById(videoId).select("owner isPublished");
+
+        if (!videoOwner) {
+            throw new ApiError(404, "Video not found");
+        }
+
+        if (videoOwner.owner.toString() !== req.user?._id.toString()) {
+            throw new ApiError(401, "Unauthorized Request");
+        }
+
+        const video = await Video.findByIdAndUpdate(videoId,
+            { $set: { isPublished: !videoOwner.isPublished } },
+            { new: true }
+        );
+
+        return res.status(200).json(
+            new ApiResponse(200, "Publish status updated successfully", video)
+        );
+    } catch (error) {
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
+    }
+});
+
+const getVideosByUserId = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10, sortType = 'desc' } = req.query;
+
+    // TODO: Get the videos likes comments and also the users subscribers count
+
+    const sorting = sortType.toLowerCase() === 'desc' ? -1 : 1;
+
+    if (!isValidObjectId(req.user?._id)) {
+        throw new ApiError(400, "Invalid User ID");
+    }
+
+    const videos = await Video.find({ owner: req.user?._id })
+        .sort({ createdAt: sorting }) // if sorting is -1 then it will sort in descending order if 1 then ascending order
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate("owner", "username fullName avatar");
+
+    return res.status(200).json(
+        new ApiResponse(200, "Videos found", videos)
+    );
 });
 
 export {
@@ -220,4 +330,5 @@ export {
     updateVideo,
     deleteVideo,
     togglePublishStatus,
+    getVideosByUserId
 };
