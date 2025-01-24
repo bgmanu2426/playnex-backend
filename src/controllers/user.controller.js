@@ -114,7 +114,9 @@ const registerUser = asyncHandler(async (req, res) => {
             email: email.toLowerCase(),
             password,
             avatar: avatar.secure_url,
+            avatarPublicId: avatar.public_id,
             coverImage: coverImage?.secure_url || "",
+            coverImagePublicId: coverImage?.public_id || "",
         });
 
         // remove the sensitive data from the user object like password, refreshToken
@@ -403,11 +405,11 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         const { fullName, email } = req.body; // Get the required user data from the request body
 
         // Forms validation - Check for not empty, valid email or full name
-        if (!fullName && !email) {
+        if ([fullName, email].some((field) => field?.trim() === "")) {
             throw new ApiError(400, "Full name or email are required");
         }
 
-        // Check if the user already exists in the database : username, email
+        // Check if the user already exists in the database and update the full name or email
         const updateduser = await User.findByIdAndUpdate(
             req.user?._id,
             {
@@ -453,11 +455,11 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         }
 
         // Delete the old avatar from cloudinary
-        const oldAvatar = await User.findById(req.user?._id).select("avatar");
+        const oldAvatarPublicID = await User.findById(req.user?._id).select("avatarPublicId");
+        const deleteAvatar = await deleteFromCloudinary(oldAvatarPublicID?.avatarPublicId);
 
-        if (oldAvatar?.avatar) {
-            const publicId = oldAvatar.avatar.split("/").pop()?.split(".")[0];
-            const deleteAvatar = await deleteFromCloudinary(publicId, "avatar");
+        if (deleteAvatar?.result !== "ok") {
+            throw new ApiError(500, "Avatar delete failed");
         }
 
         const avatar = await uploadOnCloudinary(avatarLocalPath, "avatar"); // upload the avatar to cloudinary
@@ -472,6 +474,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
             {
                 $set: {
                     avatar: avatar.secure_url || "",
+                    avatarPublicId: avatar.public_id || "",
                 },
             },
             { new: true }
@@ -484,6 +487,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
                 new ApiResponse(200, "User avatar updated successfully", user)
             );
     } catch (error) {
+        console.log(error);
         throw new ApiError(
             error?.statusCode || 500,
             error?.message || "Internal Server Error"
@@ -508,19 +512,16 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         }
 
         // Delete the old cover image from cloudinary
-        const oldCoverImage = await User.findById(req.user?._id).select(
-            "coverImage"
+        const oldCoverImagePublicId = await User.findById(req.user?._id).select(
+            "coverImagePublicId"
         );
 
-        if (oldCoverImage?.coverImage) {
-            const publicId = oldCoverImage.coverImage
-                .split("/")
-                .pop()
-                ?.split(".")[0];
-            const deleteCoverImage = await deleteFromCloudinary(
-                publicId,
-                "coverImage"
-            );
+        console.log(oldCoverImagePublicId?.coverImagePublicId);
+
+        const deleteCoverImage = await deleteFromCloudinary(oldCoverImagePublicId?.coverImagePublicId);
+
+        if (deleteCoverImage?.result !== "ok") {
+            throw new ApiError(500, "Cover image delete failed");
         }
 
         const coverImage = await uploadOnCloudinary(
@@ -538,6 +539,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
             {
                 $set: {
                     coverImage: coverImage.secure_url || "",
+                    coverImagePublicId: coverImage.public_id || "",
                 },
             },
             { new: true }

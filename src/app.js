@@ -16,6 +16,9 @@ import subscriptionRoutes from "./routes/subscription.route.js";
 import tweetRoutes from "./routes/tweet.route.js";
 import databaseRoutes from "./routes/database.route.js";
 
+// Import error middleware
+import errorMiddleware from "./middlewares/error.middleware.js";
+
 const app = express();
 
 /**
@@ -48,31 +51,6 @@ app.use(express.static("public")); // Serve static files
 app.use(cookieParser()); // Parse cookies
 
 /**
- * Configure Swagger options
- */
-const swaggerOptions = {
-    swaggerDefinition: {
-        openapi: "3.0.0",
-        info: {
-            title: "Youtube Clone API",
-            description: "Youtube Clone API Information for developers",
-            contact: {
-                name: "Lakshminarayana",
-            },
-        },
-        servers: [
-            {
-                url: "http://localhost:8000/api/v1",
-            },
-        ],
-    },
-    apis: ["./src/routes/*.js"], // Path to the API docs
-};
-
-const swaggerDocs = swaggerjsdoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-/**
  * Declare API routes
  */
 app.use("/api/v1/users", userRoutes);
@@ -85,8 +63,53 @@ app.use("/api/v1/subscriptions", subscriptionRoutes);
 app.use("/api/v1/tweets", tweetRoutes);
 app.use("/api/v1/database", databaseRoutes); // Use the new database routes
 
+/**
+ * Configure Swagger options at end of all the routes and middlewares to avoid conflicts
+ */
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: "3.0.3",
+        info: {
+            title: "Youtube Clone API",
+            description: "Youtube Clone API Information for developers",
+            contact: {},
+            version: "1.0.0",
+        },
+        tags: [
+            {
+                name: "🔐 Authentication",
+                description: "Endpoints related to user authentication",
+            },
+            {
+                name: "👤 User Managment",
+                description: "Endpoints related to user management",
+            },
+            {
+                name: "❌ Danger Zone",
+                description: "Endpoints related to emptying the database",
+            },
+        ],
+        servers: [
+            {
+                url: "http://localhost:8000/api/v1",
+            },
+        ],
+    },
+    apis: ["./src/routes/*.js"], // Path to the API docs
+};
+
+const swaggerUiOptions = {
+    customSiteTitle: "My Youtube Clone API Docs",
+    swaggerOptions: {
+        docExpansion: "none",
+    },
+};
+
+const swaggerDocs = swaggerjsdoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs, swaggerUiOptions));
+
 // Global Error Handling Middleware
-// import errorMiddleware from "./middlewares/error.middleware.js";
+
 // app.use(errorMiddleware);
 
 /**
