@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Hedvig+Letters+Sans&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
