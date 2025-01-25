@@ -135,7 +135,7 @@ const editComment = asyncHandler(async (req, res) => {
         }
 
         // Check if the logged-in user is the owner of the comment
-        if (comment.owner.toString() !== req.user._id.toString()) {
+        if (comment.owner.toString() !== req.user?._id.toString()) {
             throw new ApiError(401, "Unauthorized to edit this comment");
         }
 
@@ -178,7 +178,7 @@ const deleteComment = asyncHandler(async (req, res) => {
         }
 
         // Check if the logged-in user is the owner of the comment
-        if (comment.owner.toString() !== req.user._id.toString()) {
+        if (comment.owner.toString() !== req.user?._id.toString()) {
             throw new ApiError(401, "Unauthorized to delete this comment");
         }
 

@@ -14,6 +14,7 @@ import playlistRoutes from "./routes/playlist.route.js";
 import healthCheckRoutes from "./routes/healthcheck.route.js";
 import subscriptionRoutes from "./routes/subscription.route.js";
 import tweetRoutes from "./routes/tweet.route.js";
+import likeRoutes from "./routes/like.route.js";
 import databaseRoutes from "./routes/database.route.js";
 
 // Import error middleware
@@ -61,6 +62,7 @@ app.use("/api/v1/playlist", playlistRoutes);
 app.use("/api/v1/health", healthCheckRoutes);
 app.use("/api/v1/subscriptions", subscriptionRoutes);
 app.use("/api/v1/tweets", tweetRoutes);
+app.use("/api/v1/likes", likeRoutes);
 app.use("/api/v1/database", databaseRoutes); // Use the new database routes
 
 /**
