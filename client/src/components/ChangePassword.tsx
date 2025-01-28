@@ -29,10 +29,7 @@ function ChangePassword() {
         <div className="w-full text-white flex justify-center items-center mt-2">
             <div className="bg-transparent p-8 border rounded shadow-lg w-full max-w-md">
                 <h2 className="text-lg font-bold mb-4">Change Password</h2>
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-4"
-                >
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className="flex flex-col">
                         <Input2
                             label="Old Password"

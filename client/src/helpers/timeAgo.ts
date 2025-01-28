@@ -27,6 +27,8 @@ export function timeAgo(createdAt: string | number | Date) {
 export function formatDuration(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
-    
-    return minutes + ':' + (remainingSeconds < 10 ? '0' : '') + remainingSeconds;
+
+    return (
+        minutes + ":" + (remainingSeconds < 10 ? "0" : "") + remainingSeconds
+    );
 }

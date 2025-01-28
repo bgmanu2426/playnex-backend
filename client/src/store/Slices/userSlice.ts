@@ -32,8 +32,6 @@ export const getWatchHistory = createAsyncThunk("getWatchHistory", async () => {
     }
 });
 
-
-
 const userSlice = createSlice({
     name: "user",
     initialState,

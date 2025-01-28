@@ -13,7 +13,7 @@ function LikedVideos() {
     useEffect(() => {
         dispatch(getLikedVideos());
 
-        return () => dispatch(makeVideosNull())
+        return () => dispatch(makeVideosNull());
     }, [dispatch]);
 
     if (loading) {

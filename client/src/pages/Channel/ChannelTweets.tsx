@@ -15,7 +15,7 @@ function ChannelTweets() {
 
     return (
         <>
-            {authId === userId && <TweetAndComment tweet={true}/>}
+            {authId === userId && <TweetAndComment tweet={true} />}
             {tweets?.map((tweet) => (
                 <TweetsList
                     key={tweet?._id}

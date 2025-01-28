@@ -30,10 +30,7 @@ function EditAvatar({ cover, preImage }) {
 
     return (
         <>
-            <form
-                onSubmit={handleSubmit(upload)}
-                className="relative"
-            >
+            <form onSubmit={handleSubmit(upload)} className="relative">
                 {/* Popup */}
                 <MdOutlineCloudUpload
                     className="hover:text-gray-200 text-black rounded-md bg-white opacity-80 hover:opacity-100 p-1 cursor-pointer"

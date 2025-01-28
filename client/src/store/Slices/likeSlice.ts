@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../helpers/axiosInstance";
 import toast from "react-hot-toast";
@@ -15,7 +17,7 @@ export const toggleVideoLike = createAsyncThunk(
                 `/likes/toggle/v/${videoId}`
             );
             return response.data.data;
-        } catch (error) {
+        } catch (error: any) {
             toast.error(error?.response?.data?.error);
             throw error;
         }
@@ -30,7 +32,7 @@ export const toggleTweetLike = createAsyncThunk(
                 `/likes/toggle/t/${tweetId}`
             );
             return response.data.data;
-        } catch (error) {
+        } catch (error: any) {
             toast.error(error?.response?.data?.error);
             throw error;
         }
@@ -45,7 +47,7 @@ export const toggleCommentLike = createAsyncThunk(
                 `/likes/toggle/c/${commentId}`
             );
             return response.data.data;
-        } catch (error) {
+        } catch (error: any) {
             toast.error(error?.response?.data?.error);
             throw error;
         }
@@ -56,7 +58,7 @@ export const getLikedVideos = createAsyncThunk("getLikedVideos", async () => {
     try {
         const response = await axiosInstance.get("likes/videos");
         return response.data.data;
-    } catch (error) {
+    } catch (error: any) {
         toast.error(error?.response?.data?.error);
         throw error;
     }
@@ -74,7 +76,6 @@ const likeSlice = createSlice({
             state.loading = false;
             state.likedVideos = action.payload;
         });
-
     },
 });
 

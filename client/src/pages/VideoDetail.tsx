@@ -45,10 +45,7 @@ function VideoDetail() {
     return (
         <>
             <Navbar />
-            <Video
-                src={video?.videoFile?.url}
-                poster={video?.thumbnail?.url}
-            />
+            <Video src={video?.videoFile?.url} poster={video?.thumbnail?.url} />
             <Description
                 avatar={video?.owner?.avatar.url}
                 channelName={video?.owner?.username}
@@ -67,10 +64,7 @@ function VideoDetail() {
             <div className="text-white font-semibold sm:px-5 px-3">
                 {totalComments} Comments
             </div>
-            <TweetAndComment
-                comment={true}
-                videoId={video?._id}
-            />
+            <TweetAndComment comment={true} videoId={video?._id} />
             <InfiniteScroll
                 fetchMore={fetchMoreComments}
                 hasNextPage={hasNextPage}

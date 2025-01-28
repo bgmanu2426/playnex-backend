@@ -20,7 +20,8 @@ function Description({
     channelId,
 }) {
     const [localIsSubscribed, setLocalIsSubscribed] = useState(isSubscribed);
-    const [localSubscribersCount, setLocalSubscribersCount] = useState(subscribersCount);
+    const [localSubscribersCount, setLocalSubscribersCount] =
+        useState(subscribersCount);
     const dispatch = useDispatch();
 
     const handleSubscribe = () => {

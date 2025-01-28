@@ -9,7 +9,7 @@ function AuthLayout({ children, authentication }) {
 
     useEffect(() => {
         if (!authentication && authStatus !== authentication) {
-            return
+            return;
         }
     }, [authStatus, authentication, navigate]);
 

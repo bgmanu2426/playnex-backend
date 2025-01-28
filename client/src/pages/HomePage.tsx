@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllVideos, makeVideosNull } from "../store/Slices/videoSlice";
 import { VideoList, Container } from "../components";
 import HomeSkeleton from "../skeleton/HomeSkeleton";
-import InfiniteScroll from 'react-infinite-scroll-component';
+import InfiniteScroll from "react-infinite-scroll-component";
 
 function HomePage() {
     const dispatch = useDispatch();

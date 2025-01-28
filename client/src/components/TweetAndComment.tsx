@@ -8,8 +8,8 @@ function TogglePublish({ videoId, isPublished }) {
 
     const tooglePublishStatus = () => {
         dispatch(togglePublishStatus(videoId));
-        setIsChecked((prev) => !prev)
-    }
+        setIsChecked((prev) => !prev);
+    };
 
     return (
         <>

@@ -1,4 +1,3 @@
-import React from "react";
 import Button from "./Button";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";

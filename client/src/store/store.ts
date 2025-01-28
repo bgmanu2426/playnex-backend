@@ -19,8 +19,8 @@ const store = configureStore({
         tweet: tweetSlice,
         comment: commentSlice,
         dashboard: dashboardSlice,
-        playlist: playlistSlice
-    }
+        playlist: playlistSlice,
+    },
 });
 
 export default store;

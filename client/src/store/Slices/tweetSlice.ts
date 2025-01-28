@@ -22,10 +22,9 @@ export const editTweet = createAsyncThunk(
     "editTweet",
     async ({ tweetId, content }) => {
         try {
-            const response = await axiosInstance.patch(
-                `/tweet/${tweetId}`,
-                {content}
-            );
+            const response = await axiosInstance.patch(`/tweet/${tweetId}`, {
+                content,
+            });
             toast.success(response.data.message);
             return response.data.data;
         } catch (error) {
@@ -46,7 +45,9 @@ export const deleteTweet = createAsyncThunk("deleteTweet", async (tweetId) => {
     }
 });
 
-export const getUserTweets = createAsyncThunk( "getUserTweets", async (userId) => {
+export const getUserTweets = createAsyncThunk(
+    "getUserTweets",
+    async (userId) => {
         try {
             const response = await axiosInstance.get(`/tweet/user/${userId}`);
             return response.data.data;
@@ -62,23 +63,24 @@ const tweetSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder.addCase( getUserTweets.pending, (state) => {
+        builder.addCase(getUserTweets.pending, (state) => {
             state.loading = true;
-        }
-        );
+        });
         builder.addCase(getUserTweets.fulfilled, (state, action) => {
             state.loading = false;
             state.tweets = action.payload;
         });
         builder.addCase(createTweet.fulfilled, (state, action) => {
             state.tweets.unshift(action.payload);
-        })
+        });
         builder.addCase(deleteTweet.fulfilled, (state, action) => {
-            state.tweets = state.tweets.filter((tweet) => tweet._id !== action.payload);
-        })
+            state.tweets = state.tweets.filter(
+                (tweet) => tweet._id !== action.payload
+            );
+        });
     },
 });
 
-export const {addTweet} = tweetSlice.actions;
+export const { addTweet } = tweetSlice.actions;
 
 export default tweetSlice.reducer;

@@ -1,8 +1,25 @@
-import React from "react";
 import { ImBin, GrEdit } from "../../components/icons";
 import TogglePublish from "../TogglePublish";
 
-function VideoTable({ videos, setPopUp, setVideoDetails }) {
+interface Video {
+    _id: string;
+    isPublished: boolean;
+    title: string;
+    likesCount: number;
+    createdAt: {
+        day: number;
+        month: number;
+        year: number;
+    };
+}
+
+interface VideoTableProps {
+    videos: Video[];
+    setPopUp: React.Dispatch<React.SetStateAction<any>>;
+    setVideoDetails: (video: Video) => void;
+}
+
+function VideoTable({ videos, setPopUp, setVideoDetails }: VideoTableProps) {
     return (
         <>
             <section className="mx-auto w-full overflow-x-scroll">

@@ -1,6 +1,6 @@
 import React from "react";
 
-function Spinner({width = 5}) {
+function Spinner({ width = 5 }) {
     return (
         <>
             {" "}

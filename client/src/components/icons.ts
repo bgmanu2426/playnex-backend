@@ -42,5 +42,5 @@ export {
     RxAvatar,
     FaRegEye,
     FaRegHeart,
-    MdOutlineCloudUpload
-}
+    MdOutlineCloudUpload,
+};

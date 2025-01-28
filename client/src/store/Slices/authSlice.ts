@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../helpers/axiosInstance";
 import toast from "react-hot-toast";
@@ -17,33 +19,39 @@ interface CreateAccountData {
     coverImage?: File[];
 }
 
-export const createAccount = createAsyncThunk("register", async (data: CreateAccountData) => {
-    const formData = new FormData();
-    formData.append("avatar", data.avatar[0]);
-    formData.append("username", data.username);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("fullName", data.fullName);
-    if (data.coverImage) {
-        formData.append("coverImage", data.coverImage[0]);
-    }
+export const createAccount = createAsyncThunk(
+    "register",
+    async (data: CreateAccountData) => {
+        const formData = new FormData();
+        formData.append("avatar", data.avatar[0]);
+        formData.append("username", data.username);
+        formData.append("email", data.email);
+        formData.append("password", data.password);
+        formData.append("fullName", data.fullName);
+        if (data.coverImage) {
+            formData.append("coverImage", data.coverImage[0]);
+        }
 
-    try {
-        const response = await axiosInstance.post("/users/register", formData);
-        console.log(response.data);
-        toast.success("Registered successfully!!!");
-        return response.data;
-    } catch (error) {
-        toast.error(error?.response?.data?.error);
-        throw error;
+        try {
+            const response = await axiosInstance.post(
+                "/users/register",
+                formData
+            );
+            console.log(response.data);
+            toast.success("Registered successfully!!!");
+            return response.data;
+        } catch (error: any) {
+            toast.error(error?.response?.data?.error);
+            throw error;
+        }
     }
-});
+);
 
 export const userLogin = createAsyncThunk("login", async (data) => {
     try {
         const response = await axiosInstance.post("/users/login", data);
         return response.data.data.user;
-    } catch (error) {
+    } catch (error: any) {
         toast.error(error?.response?.data?.error);
         throw error;
     }
@@ -54,7 +62,7 @@ export const userLogout = createAsyncThunk("logout", async () => {
         const response = await axiosInstance.post("/users/logout");
         toast.success(response.data?.message);
         return response.data;
-    } catch (error) {
+    } catch (error: any) {
         toast.error(error?.response?.data?.error);
         throw error;
     }
@@ -69,7 +77,7 @@ export const refreshAccessToken = createAsyncThunk(
                 data
             );
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             toast.error(error?.response?.data?.error);
             throw error;
         }
@@ -86,7 +94,7 @@ export const changePassword = createAsyncThunk(
             );
             toast.success(response.data?.message);
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             toast.error(error?.response?.data?.error);
             throw error;
         }
@@ -106,7 +114,7 @@ export const updateAvatar = createAsyncThunk("updateAvatar", async (avatar) => {
         );
         toast.success("Updated details successfully!!!");
         return response.data.data;
-    } catch (error) {
+    } catch (error: any) {
         toast.error(error?.response?.data?.error);
         throw error;
     }
@@ -122,7 +130,7 @@ export const updateCoverImg = createAsyncThunk(
             );
             toast.success(response.data?.message);
             return response.data.data;
-        } catch (error) {
+        } catch (error: any) {
             toast.error(error?.response?.data?.error);
             throw error;
         }
@@ -139,7 +147,7 @@ export const updateUserDetails = createAsyncThunk(
             );
             toast.success("Updated details successfully!!!");
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             toast.error(error?.response?.data?.error);
             throw error;
         }

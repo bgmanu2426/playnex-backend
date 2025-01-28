@@ -10,7 +10,7 @@ function GetImagePreview({
     className,
     cameraIcon = false,
     cameraSize = 20,
-    image
+    image,
 }) {
     const [preview, setPreview] = useState(null);
 
@@ -32,10 +32,7 @@ function GetImagePreview({
                         </label>
                     )}
                     {/* <div className="relative flex justify-center items-center"> */}
-                    <img
-                        src={preview || image}
-                        className={className}
-                    />
+                    <img src={preview || image} className={className} />
                     {cameraIcon && (
                         <FaCamera
                             size={cameraSize}

@@ -98,10 +98,7 @@ function AdminDashboard() {
                     )}
 
                     {/* Dashboard Header */}
-                    <HeaderSection
-                        username={username}
-                        setPopUp={setPopUp}
-                    />
+                    <HeaderSection username={username} setPopUp={setPopUp} />
 
                     {/* channel stats section */}
                     <StatsSection dashboard={dashboard} />

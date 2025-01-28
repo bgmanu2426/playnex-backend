@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { getCurrentUser, userLogin } from "../store/Slices/authSlice.js";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import LoginSkeleton from "../skeleton/loginSkeleton.jsx";
+import LoginSkeleton from "../skeleton/LoginSkeleton.js";
 
 function Login() {
     const {

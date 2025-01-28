@@ -1,5 +1,3 @@
-import React from "react";
-
 function HomeSkeleton() {
     const loadingSkeletonStyle = "animate-pulse bg-[#222222] h-10 w-full mb-2";
     return (

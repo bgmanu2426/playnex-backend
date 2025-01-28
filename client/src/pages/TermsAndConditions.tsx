@@ -41,10 +41,7 @@ const TermsAndConditions = () => {
                         onChange={() => setIsChecked(!isChecked)}
                         className="mr-2 transform scale-125"
                     />
-                    <label
-                        htmlFor="termsCheckbox"
-                        className="font-bold"
-                    >
+                    <label htmlFor="termsCheckbox" className="font-bold">
                         I agree to the terms and conditions
                     </label>
                 </div>

@@ -8,10 +8,7 @@ function DeleteConfirmation({ onCancel, onDelete, comment, tweet, video }) {
                 <div className="fixed inset-0 flex items-center justify-center z-50">
                     <div className="text-center sm:p-5 p-3 bg-black border-slate-700 border rounded-xl">
                         <div className="flex justify-center items-start p-3 flex-wrap gap-2 ">
-                            <ImBin
-                                color="red"
-                                size={25}
-                            />
+                            <ImBin color="red" size={25} />
                             <div className="flex flex-col flex-wrap items-start">
                                 <h1 className="text-bold text-xl mb-1">
                                     Delete

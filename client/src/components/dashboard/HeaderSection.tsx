@@ -1,7 +1,12 @@
 import React from "react";
 import Button from "../Button";
 
-function HeaderSection({ username, setPopUp }) {
+interface HeaderSectionProps {
+    username: string;
+    setPopUp: React.Dispatch<React.SetStateAction<{ uploadVideo: boolean }>>;
+}
+
+function HeaderSection({ username, setPopUp }: HeaderSectionProps) {
     return (
         <section className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
             <div>

@@ -1,7 +1,11 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
 
-function ChannelNavigate({ username, edit }) {
+interface ChannelNavigateProps {
+    username: string;
+    edit: boolean;
+}
+
+function ChannelNavigate({ username, edit }: ChannelNavigateProps) {
     if (edit) {
         return (
             <>

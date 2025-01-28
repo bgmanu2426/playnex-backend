@@ -4,6 +4,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleSubscription } from "../../store/Slices/subscriptionSlice";
 import { Link } from "react-router-dom";
 
+interface ChannelHeaderProps {
+    coverImage: string;
+    avatar: string;
+    username: string;
+    fullName: string;
+    subscribersCount: number;
+    subscribedCount: number;
+    isSubscribed: boolean;
+    channelId: string;
+    edit: boolean;
+}
+
 function ChannelHeader({
     coverImage,
     avatar,
@@ -14,7 +26,7 @@ function ChannelHeader({
     isSubscribed,
     channelId,
     edit,
-}) {
+}: ChannelHeaderProps) {
     const [localIsSubscribed, setLocalIsSubscribed] = useState(isSubscribed);
     const [localSubscribersCount, setLocalSubscribersCount] =
         useState(subscribersCount);
