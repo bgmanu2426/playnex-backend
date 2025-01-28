@@ -73,7 +73,9 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         if (index >= 0) {
             userLikes.comments.splice(index, 1);
             await userLikes.save();
-            return res.status(200).json(new ApiResponse(200, "Comment unliked"));
+            return res
+                .status(200)
+                .json(new ApiResponse(200, "Comment unliked"));
         }
 
         userLikes.comments.push(commentId);
@@ -134,8 +136,9 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
  */
 const getLikedVideos = asyncHandler(async (req, res) => {
     try {
-        const userLikes = await Like.findOne({ likedBy: req.user._id })
-            .populate("videos");
+        const userLikes = await Like.findOne({
+            likedBy: req.user._id,
+        }).populate("videos");
 
         // Return an empty array if the user has no like document
         const likedVideos = userLikes?.videos || [];

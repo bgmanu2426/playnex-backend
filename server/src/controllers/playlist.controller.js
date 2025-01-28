@@ -25,7 +25,9 @@ const createPlaylist = asyncHandler(async (req, res) => {
             owner: req.user?._id,
         });
 
-        res.status(201).json(new ApiResponse(201, "Playlist created", playlist));
+        res.status(201).json(
+            new ApiResponse(201, "Playlist created", playlist)
+        );
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -51,9 +53,9 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
         // Fetches playlists belonging to the given user ID
         const playlists = await Playlist.find({ owner: userId });
 
-        res
-            .status(200)
-            .json(new ApiResponse(200, "User playlists fetched", playlists));
+        res.status(200).json(
+            new ApiResponse(200, "User playlists fetched", playlists)
+        );
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -82,7 +84,9 @@ const getPlaylistById = asyncHandler(async (req, res) => {
             throw new ApiError(404, "Playlist not found");
         }
 
-        res.status(200).json(new ApiResponse(200, "Playlist fetched", playlist));
+        res.status(200).json(
+            new ApiResponse(200, "Playlist fetched", playlist)
+        );
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -122,9 +126,9 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
             await playlist.save();
         }
 
-        res
-            .status(200)
-            .json(new ApiResponse(200, "Video added to playlist", playlist));
+        res.status(200).json(
+            new ApiResponse(200, "Video added to playlist", playlist)
+        );
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -163,9 +167,9 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
         );
         await playlist.save();
 
-        res
-            .status(200)
-            .json(new ApiResponse(200, "Video removed from playlist", playlist));
+        res.status(200).json(
+            new ApiResponse(200, "Video removed from playlist", playlist)
+        );
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -242,9 +246,9 @@ const updatePlaylist = asyncHandler(async (req, res) => {
             { new: true }
         );
 
-        res
-            .status(200)
-            .json(new ApiResponse(200, "Playlist updated", updatedPlaylist));
+        res.status(200).json(
+            new ApiResponse(200, "Playlist updated", updatedPlaylist)
+        );
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,

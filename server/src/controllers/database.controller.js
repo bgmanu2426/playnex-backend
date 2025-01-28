@@ -23,9 +23,9 @@ const emptyDatabase = asyncHandler(async (req, res) => {
         // Delete all the resources from the cloudinary
         await deleteAllFilesFromCloudinary();
 
-        return res.status(200).json(
-            new ApiResponse(200, "Database emptied successfully")
-        );
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "Database emptied successfully"));
     } catch (error) {
         throw new ApiError(
             500,

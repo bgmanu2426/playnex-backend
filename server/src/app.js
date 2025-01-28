@@ -108,7 +108,11 @@ const swaggerUiOptions = {
 };
 
 const swaggerDocs = swaggerjsdoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs, swaggerUiOptions));
+app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerDocs, swaggerUiOptions)
+);
 
 // Global Error Handling Middleware
 

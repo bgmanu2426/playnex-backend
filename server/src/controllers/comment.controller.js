@@ -97,9 +97,9 @@ const addComment = asyncHandler(async (req, res) => {
         // Optionally, you can populate the owner details before sending the response
         await comment.populate("owner", "fullName username avatar");
 
-        return res.status(201).json(
-            new ApiResponse(201, "Comment added successfully", comment)
-        );
+        return res
+            .status(201)
+            .json(new ApiResponse(201, "Comment added successfully", comment));
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -146,9 +146,11 @@ const editComment = asyncHandler(async (req, res) => {
         // Optionally, populate the owner details before sending the response
         await comment.populate("owner", "fullName username avatar");
 
-        return res.status(200).json(
-            new ApiResponse(200, "Comment updated successfully", comment)
-        );
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(200, "Comment updated successfully", comment)
+            );
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -185,9 +187,9 @@ const deleteComment = asyncHandler(async (req, res) => {
         // Delete the comment
         await comment.deleteOne();
 
-        return res.status(200).json(
-            new ApiResponse(200, "Comment deleted successfully")
-        );
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "Comment deleted successfully"));
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,

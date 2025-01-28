@@ -40,9 +40,9 @@ const toggleSubscription = asyncHandler(async (req, res) => {
             // Unsubscribe
             await existingSubscription.deleteOne();
 
-            return res.status(200).json(
-                new ApiResponse(200, "Unsubscribed successfully")
-            );
+            return res
+                .status(200)
+                .json(new ApiResponse(200, "Unsubscribed successfully"));
         }
 
         // Subscribe
@@ -51,9 +51,11 @@ const toggleSubscription = asyncHandler(async (req, res) => {
             channel: channelId,
         });
 
-        return res.status(201).json(
-            new ApiResponse(201, "Subscribed successfully", newSubscription)
-        );
+        return res
+            .status(201)
+            .json(
+                new ApiResponse(201, "Subscribed successfully", newSubscription)
+            );
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -88,15 +90,17 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
             .populate("subscriber", "fullName username avatar")
             .lean();
 
-        const subscribers = subscriptions.map(sub => sub.subscriber);
+        const subscribers = subscriptions.map((sub) => sub.subscriber);
 
         // Count the total number of subscribers
-        const totalSubscribers = await Subscription.countDocuments({ channel: userId });
+        const totalSubscribers = await Subscription.countDocuments({
+            channel: userId,
+        });
 
         return res.status(200).json(
             new ApiResponse(200, "Subscribers fetched successfully", {
                 subscribers,
-                totalSubscribers
+                totalSubscribers,
             })
         );
     } catch (error) {
@@ -133,11 +137,17 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
             .populate("channel", "fullName username avatar")
             .lean();
 
-        const channels = subscriptions.map(sub => sub.channel);
+        const channels = subscriptions.map((sub) => sub.channel);
 
-        return res.status(200).json(
-            new ApiResponse(200, "Subscribed channels fetched successfully", channels)
-        );
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    "Subscribed channels fetched successfully",
+                    channels
+                )
+            );
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,

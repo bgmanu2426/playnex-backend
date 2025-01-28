@@ -25,9 +25,9 @@ const createTweet = asyncHandler(async (req, res) => {
             author: req.user._id,
         });
 
-        return res.status(201).json(
-            new ApiResponse(201, "Tweet created successfully", tweet)
-        );
+        return res
+            .status(201)
+            .json(new ApiResponse(201, "Tweet created successfully", tweet));
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -133,9 +133,9 @@ const updateTweet = asyncHandler(async (req, res) => {
         tweet.content = content;
         await tweet.save();
 
-        return res.status(200).json(
-            new ApiResponse(200, "Tweet updated successfully", tweet)
-        );
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "Tweet updated successfully", tweet));
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,
@@ -172,9 +172,9 @@ const deleteTweet = asyncHandler(async (req, res) => {
         // Delete the tweet
         await tweet.deleteOne();
 
-        return res.status(200).json(
-            new ApiResponse(200, "Tweet deleted successfully")
-        );
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "Tweet deleted successfully"));
     } catch (error) {
         throw new ApiError(
             error?.statusCode || 500,

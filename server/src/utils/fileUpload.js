@@ -61,7 +61,9 @@ export const deleteFromCloudinary = async (publicId) => {
 export const deleteVideoCloudinary = async (publicId) => {
     try {
         if (!publicId) return null; // If publicId does not exist, return null
-        const deletedFile = await cloudinary.v2.uploader.destroy(publicId, { resource_type: "video" }); // Delete file from cloudinary
+        const deletedFile = await cloudinary.v2.uploader.destroy(publicId, {
+            resource_type: "video",
+        }); // Delete file from cloudinary
         return deletedFile; // Return the deleted file
     } catch (error) {
         console.log("Error while deleting file: ", error);
@@ -71,7 +73,9 @@ export const deleteVideoCloudinary = async (publicId) => {
 /**
  * Recursively deletes all files and folders under "folderPath"
  */
-export const deleteAllFilesFromCloudinary = async (folderPath = "yt-clone-backend") => {
+export const deleteAllFilesFromCloudinary = async (
+    folderPath = "yt-clone-backend"
+) => {
     try {
         // Remove all resource types
         for (const rType of ["image", "video", "raw"]) {
@@ -90,7 +94,9 @@ export const deleteAllFilesFromCloudinary = async (folderPath = "yt-clone-backen
         // Recursively delete any subfolders
         const subFolders = await cloudinary.v2.api.sub_folders(folderPath);
         for (const subFolder of subFolders.folders) {
-            await deleteAllFilesFromCloudinary(`${folderPath}/${subFolder.name}`);
+            await deleteAllFilesFromCloudinary(
+                `${folderPath}/${subFolder.name}`
+            );
         }
 
         // Finally remove the now-empty folder

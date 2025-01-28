@@ -455,8 +455,12 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
         }
 
         // Delete the old avatar from cloudinary
-        const oldAvatarPublicID = await User.findById(req.user?._id).select("avatarPublicId");
-        const deleteAvatar = await deleteFromCloudinary(oldAvatarPublicID?.avatarPublicId);
+        const oldAvatarPublicID = await User.findById(req.user?._id).select(
+            "avatarPublicId"
+        );
+        const deleteAvatar = await deleteFromCloudinary(
+            oldAvatarPublicID?.avatarPublicId
+        );
 
         if (deleteAvatar?.result !== "ok") {
             throw new ApiError(500, "Avatar delete failed");
@@ -518,7 +522,9 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
         console.log(oldCoverImagePublicId?.coverImagePublicId);
 
-        const deleteCoverImage = await deleteFromCloudinary(oldCoverImagePublicId?.coverImagePublicId);
+        const deleteCoverImage = await deleteFromCloudinary(
+            oldCoverImagePublicId?.coverImagePublicId
+        );
 
         if (deleteCoverImage?.result !== "ok") {
             throw new ApiError(500, "Cover image delete failed");
