@@ -6,9 +6,11 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 /**
- * @desc    Create a new tweet
  * @route   POST /api/v1/tweets
- * @access  Private
+ * @desc    Create a new tweet
+ * @param   {Object} content - The content of the tweet
+ * @returns {Promise<void>} A promise that resolves with the created tweet
+ * @throws  {ApiError} If the tweet content is empty
  */
 const createTweet = asyncHandler(async (req, res) => {
     try {
@@ -37,13 +39,12 @@ const createTweet = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Get all tweets of a specific user with pagination
  * @route   GET /api/v1/tweets/u/:userId
- * @access  Public
+ * @desc    Get all tweets of a specific user with pagination
  * @param   {string} userId - ID of the user whose tweets are to be fetched
- * @param   {number} [page=1] - Page number for pagination
- * @param   {number} [limit=10] - Number of tweets per page
- * @returns {Promise<void>}
+ * @param   {number} page - Page number for pagination (default: 1)
+ * @param   {number} limit - Number of tweets per page (default: 10)
+ * @returns {Promise<void>} - A promise that resolves with the user's tweets
  * @throws  {ApiError} - If userId is invalid or user not found
  */
 const getUserTweets = asyncHandler(async (req, res) => {
@@ -99,9 +100,12 @@ const getUserTweets = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @route   PATCH /api/v1/tweets/:tweetId
  * @desc    Update a tweet
- * @route   PUT /api/v1/tweets/:tweetId
- * @access  Private
+ * @param   {string} tweetId - ID of the tweet to be updated
+ * @param   {Object} content - The updated content of the tweet
+ * @returns {Promise<void>} - A promise that resolves with the updated tweet
+ * @throws  {ApiError} - If tweetId is invalid, tweet not found, or unauthorized
  */
 const updateTweet = asyncHandler(async (req, res) => {
     try {
@@ -145,9 +149,11 @@ const updateTweet = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Delete a tweet
  * @route   DELETE /api/v1/tweets/:tweetId
- * @access  Private
+ * @desc    Delete a tweet
+ * @param   {string} tweetId - ID of the tweet to be deleted
+ * @returns {Promise<void>} - A promise that resolves with a success message
+ * @throws  {ApiError} - If tweetId is invalid, tweet not found, or unauthorized
  */
 const deleteTweet = asyncHandler(async (req, res) => {
     try {

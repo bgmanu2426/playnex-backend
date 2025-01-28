@@ -8,8 +8,8 @@ import DATA from "../config.js";
  * @property {string} username - Unique username
  * @property {string} email - User's email address
  * @property {string} fullName - User's full name
- * @property {string} avatar - URL to the user's avatar image
- * @property {string} coverImage - URL to the user's cover image
+ * @property {File} avatar - URL to the user's avatar image
+ * @property {File} coverImage - URL to the user's cover image
  * @property {mongoose.Types.ObjectId[]} watchHistory - Array of watched video IDs
  * @property {string} password - Hashed password
  * @property {string} refreshToken - Refresh token for authentication

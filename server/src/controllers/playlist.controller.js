@@ -1,14 +1,17 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import { isValidObjectId } from "mongoose";
 import { Playlist } from "../models/playlist.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
+import { User } from "../models/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 /**
- * @function createPlaylist
- * @description Creates a new playlist for the authenticated user.
- * @param {Object} req Express request object containing user details and playlist information.
- * @param {Object} res Express response object.
+ * @route POST /api/v1/playlists
+ * @desc Creates a new playlist for the authenticated user.
+ * @param {Object} title The title of the playlist.
+ * @param {Object} description The description of the playlist.
+ * @returns {Promise<void>} A promise that resolves with the created playlist.
+ * @throws {ApiError} If the playlist name is empty.
  */
 const createPlaylist = asyncHandler(async (req, res) => {
     try {
@@ -37,10 +40,11 @@ const createPlaylist = asyncHandler(async (req, res) => {
 });
 
 /**
- * @function getUserPlaylists
- * @description Retrieves all playlists for a specific user.
- * @param {Object} req Express request object containing userId in params.
- * @param {Object} res Express response object.
+ * @route GET /api/v1/playlists/user/:userId
+ * @desc Retrieves all playlists for a specific user.
+ * @param {Object} userId The ID of the user.
+ * @returns {Promise<void>} A promise that resolves with the user's playlists.
+ * @throws {ApiError} If the user ID is invalid.
  */
 const getUserPlaylists = asyncHandler(async (req, res) => {
     try {
@@ -48,6 +52,13 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 
         if (!isValidObjectId(userId)) {
             throw new ApiError(400, "Invalid user ID");
+        }
+
+        // Check if the user id exists in the database
+        const user = await User.findById(userId);
+
+        if (!user) {
+            throw new ApiError(404, "User not found");
         }
 
         // Fetches playlists belonging to the given user ID
@@ -65,10 +76,11 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 });
 
 /**
- * @function getPlaylistById
- * @description Retrieves a single playlist by its ID and populates its videos.
- * @param {Object} req Express request object containing playlistId in params.
- * @param {Object} res Express response object.
+ * @route GET /api/v1/playlists/:playlistId
+ * @desc Retrieves a single playlist by its ID and populates its videos.
+ * @param {Object} playlistId The ID of the playlist.
+ * @returns {Promise<void>} A promise that resolves with the playlist.
+ * @throws {ApiError} If the playlist ID is invalid.
  */
 const getPlaylistById = asyncHandler(async (req, res) => {
     try {
@@ -96,10 +108,12 @@ const getPlaylistById = asyncHandler(async (req, res) => {
 });
 
 /**
- * @function addVideoToPlaylist
- * @description Adds a video to a playlist if it is not already included.
- * @param {Object} req Express request object containing playlistId and videoId in params.
- * @param {Object} res Express response object.
+ * @route POST /api/v1/playlists/add/:videoId/:playlistId
+ * @desc Adds a video to a playlist if it is not already included.
+ * @param {Object} playlistId The ID of the playlist.
+ * @param {Object} videoId The ID of the video.
+ * @returns {Promise<void>} A promise that resolves with the updated playlist.
+ * @throws {ApiError} If the playlist or video ID is invalid.
  */
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
     try {
@@ -138,10 +152,12 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 });
 
 /**
- * @function removeVideoFromPlaylist
- * @description Removes a video from a playlist if it exists in the playlist.
- * @param {Object} req Express request object containing playlistId and videoId in params.
- * @param {Object} res Express response object.
+ * @route DELETE /api/v1/playlists/remove/:videoId/:playlistId
+ * @desc Removes a video from a playlist if it exists in the playlist.
+ * @param {Object} playlistId The ID of the playlist.
+ * @param {Object} videoId The ID of the video.
+ * @returns {Promise<void>} A promise that resolves with the updated playlist.
+ * @throws {ApiError} If the playlist or video ID is invalid.
  */
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     try {
@@ -179,10 +195,12 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 });
 
 /**
- * @function deletePlaylist
- * @description Deletes a playlist by its ID.
+ * @route DELETE /api/v1/playlists/:playlistId
+ * @desc Deletes a playlist by its ID.
  * @param {Object} req Express request object containing playlistId in params.
- * @param {Object} res Express response object.
+ * @param {Object} playlistId The ID of the playlist.
+ * @returns {Promise<void>} A promise that resolves with a success message.
+ * @throws {ApiError} If the playlist ID is invalid or the playlist
  */
 const deletePlaylist = asyncHandler(async (req, res) => {
     try {
@@ -213,10 +231,13 @@ const deletePlaylist = asyncHandler(async (req, res) => {
 });
 
 /**
- * @function updatePlaylist
- * @description Updates playlist details such as name and description.
- * @param {Object} req Express request object containing playlistId in params and new data in body.
- * @param {Object} res Express response object.
+ * @route PUT /api/v1/playlists/:playlistId
+ * @desc Updates playlist details such as name and description.
+ * @param {Object} playlistId - The ID of the playlist.
+ * @param {Object} title - The new title of the playlist.
+ * @param {Object} description - The new description of the playlist.
+ * @returns {Promise<void>} A promise that resolves with the updated playlist.
+ * @throws {ApiError} If the playlist ID is invalid or the playlist is not found.
  */
 const updatePlaylist = asyncHandler(async (req, res) => {
     try {

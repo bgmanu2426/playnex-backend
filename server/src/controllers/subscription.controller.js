@@ -6,9 +6,11 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 /**
- * @desc Toggle subscription for a channel
- * @route POST /api/v1/subscriptions/c/:channelId
- * @access Private
+ * @route POST /api/v1/subscriptions/:channelId
+ * @desc Subscribe or unsubscribe from a channel.
+ * @param {Object} channelId - The ID of the channel to subscribe to.
+ * @returns {Promise<void>} - A promise that resolves with a success message.
+ * @throws {ApiError} - If the channel ID is invalid.
  */
 const toggleSubscription = asyncHandler(async (req, res) => {
     try {
@@ -65,9 +67,10 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Get list of subscribers for a channel
  * @route GET /api/v1/subscriptions/my-subscribers
- * @access Private
+ * @desc Get list of subscribers for a channel
+ * @returns {Promise<void>} - A promise that resolves with the subscribers.
+ * @throws {ApiError} - If the user ID is invalid or the channel is not found.
  */
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     try {
@@ -112,9 +115,10 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Get list of channels the user has subscribed to
  * @route GET /api/v1/subscriptions/my-subscriptions
- * @access Private
+ * @desc Get list of channels the user has subscribed to
+ * @returns {Promise<void>} - A promise that resolves with the subscribed channels.
+ * @throws {ApiError} - If the user ID is invalid or the user is not found.
  */
 const getSubscribedChannels = asyncHandler(async (req, res) => {
     try {

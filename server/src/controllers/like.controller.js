@@ -8,9 +8,11 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 /**
- * @desc Toggle like on a video
  * @route POST /api/v1/likes/toggle/v/:videoId
- * @access Private
+ * @desc Like or unlike a video
+ * @param {string} videoId - ID of the video to like/unlike
+ * @returns {Promise<void>} - Returns a response with the status and message
+ * @throws {ApiError} - If an error occurs while liking/unliking the video
  */
 const toggleVideoLike = asyncHandler(async (req, res) => {
     try {
@@ -48,9 +50,11 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Toggle like on a comment
  * @route POST /api/v1/likes/toggle/c/:commentId
- * @access Private
+ * @desc Like or unlike a comment
+ * @param {string} commentId - ID of the comment to like/unlike
+ * @returns {Promise<void>} - Returns a response with the status and message
+ * @throws {ApiError} - If an error occurs while liking/unliking the comment
  */
 const toggleCommentLike = asyncHandler(async (req, res) => {
     try {
@@ -90,9 +94,11 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Toggle like on a tweet
  * @route POST /api/v1/likes/toggle/t/:tweetId
- * @access Private
+ * @desc Like or unlike a tweet
+ * @param {string} tweetId - ID of the tweet to like/unlike
+ * @returns {Promise<void>} - Returns a response with the status and message
+ * @throws {ApiError} - If an error occurs while liking/unliking the tweet
  */
 const toggleTweetLike = asyncHandler(async (req, res) => {
     try {
@@ -130,9 +136,10 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Get all liked videos by the current user
  * @route GET /api/v1/likes/videos
- * @access Private
+ * @desc Get all liked videos by the current user
+ * @returns {Promise<void>} - Returns a response with the status and liked videos
+ * @throws {ApiError} - If an error occurs while fetching liked videos
  */
 const getLikedVideos = asyncHandler(async (req, res) => {
     try {

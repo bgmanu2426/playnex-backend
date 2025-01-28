@@ -10,6 +10,17 @@ import ApiError from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
+/**
+ * @route   GET /api/v1/videos
+ * @desc    Fetch all videos with pagination, sorting, and search.
+ * @param   {Number} page The page number for pagination (default: 1).
+ * @param   {Number} limit The number of videos per page (default: 10).
+ * @param   {String} query The search query for video titles (optional).
+ * @param   {String} sortBy The sorting order for videos (views, newest, older) (default: newest).
+ * @returns {Promise<void>} A promise that resolves with the videos and pagination info.
+ * @throws  {ApiError} If the query fails.
+ */
+
 const getAllVideos = asyncHandler(async (req, res) => {
     try {
         const { page = 1, limit = 10, query, sortBy = "newest" } = req.query; // Pagination and sorting parameters
@@ -64,6 +75,18 @@ const getAllVideos = asyncHandler(async (req, res) => {
         );
     }
 });
+
+/**
+ * @route   POST /api/v1/videos
+ * @desc    Publishes a new video with a title, description, video file, and thumbnail.
+ * @param   {String} title The title of the video.
+ * @param   {String} description The description of the video.
+ * @param   {Boolean} isPublished The publish status of the video (default: true).
+ * @param   {File} videoFile The video file to upload.
+ * @param   {File} thumbnail The thumbnail image to upload.
+ * @returns {Promise<void>} A promise that resolves with the published video.
+ * @throws  {ApiError} If the video file or thumbnail is missing or the upload fails.
+ */
 
 const publishAVideo = asyncHandler(async (req, res) => {
     const { title, description, isPublished = true } = req.body;
@@ -123,6 +146,13 @@ const publishAVideo = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * @route   GET /api/v1/videos/:videoId
+ * @desc    Fetches a video by its ID and increments the view count.
+ * @param   {String} videoId The ID of the video to fetch.
+ * @returns {Promise<void>} A promise that resolves with the video details.
+ * @throws  {ApiError} If the video ID is invalid or the video is not found.
+ */
 const getVideoById = asyncHandler(async (req, res) => {
     try {
         const { videoId } = req.params;
@@ -187,6 +217,17 @@ const getVideoById = asyncHandler(async (req, res) => {
         );
     }
 });
+
+/**
+ * @route   PATCH /api/v1/videos/:videoId
+ * @desc    Updates a video's title, description, and thumbnail by its ID.
+ * @param   {String} videoId The ID of the video to update.
+ * @param   {String} title The new title of the video.
+ * @param   {String} description The new description of the video.
+ * @param   {File} thumbnail The new thumbnail image to upload.
+ * @returns {Promise<void>} A promise that resolves with the updated video details.
+ * @throws  {ApiError} If the video ID is invalid, the user is unauthorized, or the update fails.
+ */
 
 const updateVideo = asyncHandler(async (req, res) => {
     try {
@@ -255,6 +296,13 @@ const updateVideo = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * @route   DELETE /api/v1/videos/:videoId
+ * @desc    Deletes a video by its ID and removes it from Cloudinary.
+ * @param   {String} videoId The ID of the video to delete.
+ * @returns {Promise<void>} A promise that resolves with a success message.
+ * @throws  {ApiError} If the video ID is invalid, the user is unauthorized, or the deletion fails.
+ */
 const deleteVideo = asyncHandler(async (req, res) => {
     try {
         const { videoId } = req.params;
@@ -298,6 +346,14 @@ const deleteVideo = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * @route   PATCH /api/v1/videos/toggle-publish/:videoId
+ * @desc    Toggles the publish status of a video by its ID.
+ * @param   {String} videoId The ID of the video to update.
+ * @returns {Promise<void>} A promise that resolves with the updated video details.
+ * @throws  {ApiError} If the video ID is invalid, the user is unauthorized, or the update fails.
+ */
+
 const togglePublishStatus = asyncHandler(async (req, res) => {
     try {
         const { videoId } = req.params;
@@ -337,10 +393,18 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * @route   GET /api/v1/videos/u/videos
+ * @desc    Fetch all videos by the currently logged-in user.
+ * @param   {Number} page The page number for pagination (default: 1).
+ * @param   {Number} limit The number of videos per page (default: 10).
+ * @param   {String} sortType The sorting order for videos (desc, asc) (default: desc).
+ * @returns {Promise<void>} A promise that resolves with the videos of the user.
+ * @throws  {ApiError} If the user ID is invalid or the videos are not found.
+ */
+
 const getVideosByUserId = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, sortType = "desc" } = req.query;
-
-    // TODO: Get the videos likes comments and also the users subscribers count
 
     const sorting = sortType.toLowerCase() === "desc" ? -1 : 1;
 

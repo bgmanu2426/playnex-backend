@@ -5,9 +5,10 @@ import ApiResponse from "../utils/ApiResponse.js";
 import { deleteAllFilesFromCloudinary } from "../utils/fileUpload.js";
 
 /**
- * @desc    Empty the entire database by deleting all documents from all collections
  * @route   DELETE /api/v1/database/empty
- * @access  Public
+ * @desc    Empty the entire database by deleting all documents from all collections
+ * @returns {Promise<void>} - A promise that resolves to void
+ * @throws  {ApiError} - Throws an error if the database cannot be emptied
  */
 const emptyDatabase = asyncHandler(async (req, res) => {
     try {

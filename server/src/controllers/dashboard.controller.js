@@ -7,10 +7,10 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 /**
- * @function getChannelStats
- * @description Get the channel stats like total video views, total subscribers, total videos, total likes etc.
- * @param {Object} req Express request object containing user details.
- * @param {Object} res Express response object.
+ * @route GET /api/v1/dashboard/stats
+ * @desc Get the channel stats like total video views, total subscribers, total videos, total likes etc.
+ * @returns {Promise<void>} - A promise that resolves to the response object
+ * @throws {ApiError} - If an error occurs while fetching channel stats
  */
 const getChannelStats = asyncHandler(async (req, res) => {
     try {
@@ -50,10 +50,10 @@ const getChannelStats = asyncHandler(async (req, res) => {
 });
 
 /**
- * @function getChannelVideos
- * @description Get all the videos uploaded by the channel.
- * @param {Object} req Express request object containing user details.
- * @param {Object} res Express response object.
+ * @route GET /api/v1/dashboard/videos
+ * @desc Get all the videos uploaded by the channel
+ * @returns {Promise<void>} - A promise that resolves to the response object
+ * @throws {ApiError} - If an error occurs while fetching channel videos
  */
 const getChannelVideos = asyncHandler(async (req, res) => {
     try {

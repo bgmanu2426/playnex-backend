@@ -10,12 +10,6 @@ import jwt from "jsonwebtoken";
 import DATA from "../config.js";
 import mongoose from "mongoose";
 
-/**
- * Generates access and refresh tokens for a user
- * @param {string} userId - The ID of the user
- * @returns {Object} - An object containing accessToken and refreshToken
- * @throws {ApiError} - If token generation fails
- */
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -36,10 +30,15 @@ const generateAccessAndRefreshTokens = async (userId) => {
 };
 
 /**
- * Registers a new user
- * @param {Object} req - The request object containing user data
- * @param {Object} res - The response object
- * @returns {Promise<void>}
+ * @route POST /api/v1/auth/register
+ * @desc Registers a new user
+ * @param {string} fullName - The full name of the user
+ * @param {string} username - The username of the user
+ * @param {string} email - The email of the user
+ * @param {string} password - The password of the user
+ * @param {File} avatar - The avatar of the user
+ * @param {File} coverImage - The cover image of the user (optional)
+ * @returns {Promise<void>} - A promise that resolves with the created user
  * @throws {ApiError} - If registration fails
  */
 const registerUser = asyncHandler(async (req, res) => {
@@ -143,11 +142,12 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 /**
- * Logs in a user
- * @param {Object} req - The request object containing login credentials
- * @param {Object} res - The response object
- * @returns {Promise<void>}
- * @throws {ApiError} - If login fails
+ * @route POST /api/v1/auth/login
+ * @desc Logs in a user
+ * @param {string} email - The email of the user
+ * @param {string} password - The password of the user
+ * @returns {Promise<void>} - A promise that resolves with the logged in user
+ * @throws {ApiError} - If login fails or user not found
  */
 const loginUser = asyncHandler(async (req, res) => {
     try {
@@ -221,10 +221,10 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 /**
- * Logs out a user by clearing tokens
- * @param {Object} req - The authenticated request object
- * @param {Object} res - The response object
- * @returns {Promise<void>}
+ * @route POST /api/v1/auth/logout
+ * @desc Logs out a user
+ * @returns {Promise<void>} - A promise that resolves with a success message
+ * @throws {ApiError} - If logout fails or user not found
  */
 const logoutUser = asyncHandler(async (req, res) => {
     // Clear the cookies and refresh token from the database
@@ -253,11 +253,10 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 /**
- * Refreshes the access token using a valid refresh token
- * @param {Object} req - The request object containing refresh token
- * @param {Object} res - The response object
- * @returns {Promise<void>}
- * @throws {ApiError} - If refresh token is invalid
+ * @route POST /api/v1/auth/refresh-token
+ * @desc Refreshes the access token
+ * @returns {Promise<void>} - A promise that resolves with the new access token
+ * @throws {ApiError} - If refresh token is invalid or user not found
  */
 const refreshAccessToken = asyncHandler(async (req, res) => {
     // Get the refresh token from the request cookies
@@ -316,10 +315,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 /**
- * Changes the current user's password
- * @param {Object} req - The request object containing current and new passwords
- * @param {Object} res - The response object
- * @returns {Promise<void>}
+ * @route PATCH /api/v1/auth/change-password
+ * @desc Changes the current user password
+ * @param {string} currentPassword - The current password of the user
+ * @param {string} newPassword - The new password of the user
+ * @returns {Promise<void>} - A promise that resolves with a success message
  * @throws {ApiError} - If password change fails
  */
 const changeCurrentPassword = asyncHandler(async (req, res) => {
@@ -374,10 +374,10 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 });
 
 /**
- * Retrieves the current authenticated user
- * @param {Object} req - The authenticated request object
- * @param {Object} res - The response object
- * @returns {Promise<void>}
+ * @route GET /api/v1/auth/me
+ * @desc Retrieves the current user
+ * @returns {Promise<void>} - A promise that resolves with the current user
+ * @throws {ApiError} - If user retrieval fails
  */
 const getCurrentUser = asyncHandler(async (req, res) => {
     try {
@@ -394,11 +394,12 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 /**
- * Updates the user's account details
- * @param {Object} req - The request object containing updated details
- * @param {Object} res - The response object
- * @returns {Promise<void>}
- * @throws {ApiError} - If update fails
+ * @route PATCH /api/v1/auth/update-account
+ * @desc Updates the user's account details
+ * @param {string} fullName - The full name of the user
+ * @param {string} email - The email of the user
+ * @returns {Promise<void>} - A promise that resolves with the updated user
+ * @throws {ApiError} - If account update fails
  */
 const updateAccountDetails = asyncHandler(async (req, res) => {
     try {
@@ -440,10 +441,10 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 });
 
 /**
- * Updates the user's avatar
- * @param {Object} req - The request object containing new avatar
- * @param {Object} res - The response object
- * @returns {Promise<void>}
+ * @route PATCH /api/v1/auth/update-avatar
+ * @desc Updates the user's avatar
+ * @param {File} avatar - The avatar of the user to be updated
+ * @returns {Promise<void>} - A promise that resolves with the updated user
  * @throws {ApiError} - If avatar update fails
  */
 const updateUserAvatar = asyncHandler(async (req, res) => {
@@ -500,10 +501,10 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 /**
- * Updates the user's cover image
- * @param {Object} req - The request object containing new cover image
- * @param {Object} res - The response object
- * @returns {Promise<void>}
+ * @route PATCH /api/v1/auth/update-cover-image
+ * @desc Updates the user's cover image
+ * @param {File} coverImage - The cover image of the user to be updated
+ * @returns {Promise<void>} - A promise that resolves with the updated user
  * @throws {ApiError} - If cover image update fails
  */
 const updateUserCoverImage = asyncHandler(async (req, res) => {
@@ -570,10 +571,10 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 });
 
 /**
- * Retrieves a user's channel profile based on username
- * @param {Object} req - The request object containing the username parameter
- * @param {Object} res - The response object
- * @returns {Promise<void>}
+ * @route GET /api/v1/users/channel/:username
+ * @desc Retrieves a user's channel profile
+ * @param {string} username - The username of the channel
+ * @returns {Promise<void>} - A promise that resolves with the user's channel profile
  * @throws {ApiError} - If channel retrieval fails
  */
 const getUserChannelProfile = asyncHandler(async (req, res) => {
@@ -649,11 +650,10 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 });
 
 /**
- * Retrieves the authenticated user's watch history
- * @param {Object} req - The authenticated request object
- * @param {Object} res - The response object
- * @returns {Promise<void>}
- * @throws {ApiError} - If retrieval fails
+ * @route GET /api/v1/users/watch-history
+ * @desc Retrieves the user's watch history
+ * @returns {Promise<void>} - A promise that resolves with the user's watch history
+ * @throws {ApiError} - If watch history retrieval fails
  */
 const getWatchHistory = asyncHandler(async (req, res) => {
     try {

@@ -6,9 +6,13 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 /**
- * @desc    Get all comments for a specific video
- * @route   GET /api/v1/comments/:videoId
- * @access  Public
+ * @route GET /api/v1/comments/:videoId
+ * @desc Get all comments for a specific video
+ * @param {string} videoId - The ID of the video
+ * @param {number} page - The page number for pagination (default: 1)
+ * @param {number} limit - The number of comments per page (default: 10)
+ * @returns {Promise<void>} - A promise that resolves to the response object
+ * @throws {ApiError} - If an error occurs while fetching comments
  */
 const getVideoComments = asyncHandler(async (req, res) => {
     try {
@@ -58,9 +62,12 @@ const getVideoComments = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Add a new comment to a video
- * @route   POST /api/v1/comments/:videoId
- * @access  Private
+ * @route POST /api/v1/comments/:videoId
+ * @desc Add a new comment to a video
+ * @param {string} videoId - The ID of the video
+ * @param {string} content - The content of the comment
+ * @returns {Promise<void>} - A promise that resolves to the response object
+ * @throws {ApiError} - If an error occurs while adding the comment
  */
 const addComment = asyncHandler(async (req, res) => {
     try {
@@ -109,9 +116,12 @@ const addComment = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Edit an existing comment
- * @route   PATCH /api/v1/comments/:commentId
- * @access  Private
+ * @route PATCH /api/v1/comments/:commentId
+ * @desc Edit an existing comment
+ * @param {string} commentId - The ID of the comment
+ * @param {string} content - The new content of the comment
+ * @returns {Promise<void>} - A promise that resolves to the response object
+ * @throws {ApiError} - If an error occurs while editing the comment
  */
 const editComment = asyncHandler(async (req, res) => {
     try {
@@ -160,9 +170,12 @@ const editComment = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Delete a comment
- * @route   DELETE /api/v1/comments/:commentId
- * @access  Private
+ * Delete a comment
+ * @route DELETE /api/v1/comments/:commentId
+ * @desc Delete a comment
+ * @param {string} commentId - The ID of the comment
+ * @returns {Promise<void>} - A promise that resolves to the response object
+ * @throws {ApiError} - If an error occurs while deleting the comment
  */
 const deleteComment = asyncHandler(async (req, res) => {
     try {
