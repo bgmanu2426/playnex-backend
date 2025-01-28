@@ -21,13 +21,13 @@ const getChannelStats = asyncHandler(async (req, res) => {
 
         // Get total views
         const totalViews = await Video.aggregate([
-            { $match: { owner: mongoose.Types.ObjectId(userId) } },
+            { $match: { owner: new mongoose.Types.ObjectId(userId) } },
             { $group: { _id: null, totalViews: { $sum: "$views" } } },
         ]);
 
         // Get total subscribers
         const totalSubscribers = await Subscription.countDocuments({
-            subscribedTo: userId,
+            channel: userId,
         });
 
         // Get total likes
@@ -56,14 +56,21 @@ const getChannelStats = asyncHandler(async (req, res) => {
  * @param {Object} res Express response object.
  */
 const getChannelVideos = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
+    try {
+        const userId = req.user?._id;
 
-    // Get all videos uploaded by the channel
-    const videos = await Video.find({ owner: userId });
+        // Get all videos uploaded by the channel
+        const videos = await Video.find({ owner: userId });
 
-    res.status(200).json(
-        new ApiResponse(200, "Channel videos fetched successfully", videos)
-    );
+        res.status(200).json(
+            new ApiResponse(200, "Channel videos fetched successfully", videos)
+        );
+    } catch (error) {
+        throw new ApiError(
+            error?.statusCode || 500,
+            error?.message || "Internal Server Error"
+        );
+    }
 });
 
 export { getChannelStats, getChannelVideos };
