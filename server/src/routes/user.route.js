@@ -19,10 +19,7 @@ import createRateLimiterWith from "../middlewares/ratelimit.middleware.js";
 const router = Router(); // create a new router object
 
 // Configure rate limiting with IP extraction
-const limiter = createRateLimiterWith(24, 0, 2); // 24 hours, 0 minutes, 20 requests
-
-// Apply rate limiting to all requests
-router.use(limiter);
+const limiter = createRateLimiterWith(24, 0, 10); // 24 hours, 0 minutes, 10 requests
 
 /**
  * @swagger
@@ -80,6 +77,7 @@ router.use(limiter);
  */
 
 router.route("/register").post(
+    limiter,
     upload.fields([
         {
             name: "avatar",
@@ -241,7 +239,9 @@ router.route("/refresh-token").post(refreshAccessToken);
  *         description: Internal server error
  */
 
-router.route("/change-password").patch(verifyJWT, changeCurrentPassword);
+router
+    .route("/change-password")
+    .patch(limiter, verifyJWT, changeCurrentPassword);
 
 /**
  * @swagger
@@ -301,7 +301,7 @@ router.route("/current-user").get(verifyJWT, getCurrentUser);
  *         description: Internal server error
  */
 
-router.route("/update-user").patch(verifyJWT, updateAccountDetails);
+router.route("/update-user").patch(limiter, verifyJWT, updateAccountDetails);
 
 /**
  * @swagger
@@ -338,7 +338,7 @@ router.route("/update-user").patch(verifyJWT, updateAccountDetails);
 
 router
     .route("/update-avatar")
-    .patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
+    .patch(limiter, verifyJWT, upload.single("avatar"), updateUserAvatar);
 
 /**
  * @swagger
@@ -375,7 +375,12 @@ router
 
 router
     .route("/update-cover-image")
-    .patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage);
+    .patch(
+        limiter,
+        verifyJWT,
+        upload.single("coverImage"),
+        updateUserCoverImage
+    );
 
 /**
  * @swagger

@@ -22,9 +22,7 @@ import errorMiddleware from "./middlewares/error.middleware.js";
 
 const app = express();
 
-/**
- * Initialize CORS middleware
- */
+// Initialize all the middlewares
 app.use(
     cors({
         origin: DATA.client_url,
@@ -32,9 +30,6 @@ app.use(
     })
 );
 
-/**
- * Initialize body parsing middleware for JSON
- */
 app.use(
     express.json({
         limit: "12kb",
@@ -51,9 +46,7 @@ app.use(
 app.use(express.static("public")); // Serve static files
 app.use(cookieParser()); // Parse cookies
 
-/**
- * Declare API routes
- */
+// Define routes
 app.use("/api/v1/healthcheck", healthCheckRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/videos", videoRoutes);
@@ -87,7 +80,7 @@ const swaggerOptions = {
                 description: "Endpoints related to user management",
             },
             {
-                name: "📽️ Videos",
+                name: "📹 Videos",
                 description: "Endpoints related to video management",
             },
             {
@@ -115,7 +108,7 @@ const swaggerOptions = {
                 description: "Endpoints related to emptying the database",
             },
             {
-                name:"✅ Healthcheck",
+                name: "✅ Healthcheck",
                 description: "Endpoints related to health check",
             },
         ],
@@ -142,12 +135,7 @@ app.use(
     swaggerUi.setup(swaggerDocs, swaggerUiOptions)
 );
 
-// Global Error Handling Middleware
+// Global Error Handling Middleware - Must be the last middleware
+app.use(errorMiddleware);
 
-// app.use(errorMiddleware);
-
-/**
- * Express application instance
- * @module app
- */
 export { app };

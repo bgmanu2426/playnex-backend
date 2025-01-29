@@ -2,9 +2,7 @@ import cloudinary from "cloudinary";
 import fs from "fs";
 import DATA from "../config.js";
 
-/**
- * Configures Cloudinary with the provided credentials
- */
+// Configure Cloudinary
 cloudinary.v2.config({
     cloud_name: DATA.cloudinary.cloud_name,
     api_key: DATA.cloudinary.api_key,
@@ -70,9 +68,7 @@ export const deleteVideoCloudinary = async (publicId) => {
     }
 };
 
-/**
- * Recursively deletes all files and folders under "folderPath"
- */
+// Recursively delete all files from a folder in Cloudinary
 export const deleteAllFilesFromCloudinary = async (
     folderPath = "yt-clone-backend"
 ) => {

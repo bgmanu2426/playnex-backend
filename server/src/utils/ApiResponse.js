@@ -1,6 +1,3 @@
-/**
- * Class representing a standardized API response.
- */
 class ApiResponse {
     /**
      * Create an ApiResponse.

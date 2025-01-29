@@ -1,7 +1,3 @@
-/**
- * Class representing a standardized API error.
- * @extends Error
- */
 class ApiError extends Error {
     /**
      * Create an ApiError.

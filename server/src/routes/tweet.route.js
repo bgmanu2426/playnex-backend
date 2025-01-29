@@ -6,8 +6,13 @@ import {
     updateTweet,
 } from "../controllers/tweet.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import createRateLimiterWith from "../middlewares/ratelimit.middleware.js";
 
-const router = Router();
+const router = Router(); // create a new router object
+
+// Configure rate limiting with IP extraction
+const limiter = createRateLimiterWith(24, 0, 10); // 24 hours, 0 minutes, 10 requests
+router.use(limiter); // Apply rate limiter middleware to all routes in this file
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 /**

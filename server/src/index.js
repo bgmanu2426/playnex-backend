@@ -2,9 +2,7 @@ import connectToDB from "./db/index.js"; // Import connectToDB from db/index.js
 import { app } from "./app.js"; // Import app from app.js
 import DATA from "./config.js";
 
-/**
- * Connect to the database and start the server
- */
+// Connect to MongoDB and start the express server
 connectToDB()
     .then(() => {
         app.listen(DATA.port || 8000, () => {

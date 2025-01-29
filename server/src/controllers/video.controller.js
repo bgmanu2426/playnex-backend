@@ -262,7 +262,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 
         // delete the old thumbnail from cloudinary
         const updateThumbnail = await deleteFromCloudinary(
-            thumbnailPublicId?.thumbnailPublicId
+            videoOwner?.thumbnailPublicId
         );
 
         if (updateThumbnail?.result !== "ok") {

@@ -35,7 +35,7 @@ router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
  *               type: string
  *               example: My Playlist
  *             description:
- *               type: string    
+ *               type: string
  *               example: My favorite videos
  *     responses:
  *       '201':
@@ -96,7 +96,7 @@ router.route("/").post(createPlaylist);
  *               type: string
  *               example: Updated Playlist Title
  *             description:
- *               type: string    
+ *               type: string
  *               example: Updated Playlist Description
  *     responses:
  *       200:
@@ -198,7 +198,6 @@ router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);
  *         description: Internal server error
  */
 router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);
-
 
 /**
  * @swagger
