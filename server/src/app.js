@@ -91,8 +91,16 @@ const swaggerOptions = {
                 description: "Endpoints related to comments",
             },
             {
+                name: "👍 Likes",
+                description: "Endpoints related to comments",
+            },
+            {
                 name: "❌ Danger Zone",
                 description: "Endpoints related to emptying the database",
+            },
+            {
+                name:"Healthcheck",
+                description: "Endpoints related to health check",
             },
         ],
         servers: [
