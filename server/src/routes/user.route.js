@@ -14,17 +14,12 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import rateLimit from "express-rate-limit";
+import createRateLimiterWith from "../middlewares/ratelimit.middleware.js";
 
 const router = Router(); // create a new router object
 
-// Configure rate limiting
-const limiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 20, // Limit each IP to 20 requests per windowMs
-    message: "Too many requests from this IP, please try again later.",
-    skipFailedRequests: true,
-});
+// Configure rate limiting with IP extraction
+const limiter = createRateLimiterWith(24, 0, 2); // 24 hours, 0 minutes, 20 requests
 
 // Apply rate limiting to all requests
 router.use(limiter);
