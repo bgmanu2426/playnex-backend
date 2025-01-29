@@ -14,8 +14,20 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import rateLimit from "express-rate-limit";
 
 const router = Router(); // create a new router object
+
+// Configure rate limiting
+const limiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 20, // Limit each IP to 20 requests per windowMs
+    message: "Too many requests from this IP, please try again later.",
+    skipFailedRequests: true,
+});
+
+// Apply rate limiting to all requests
+router.use(limiter);
 
 /**
  * @swagger
@@ -64,7 +76,7 @@ const router = Router(); // create a new router object
  *             avatar: <binary data>
  *             coverImage: <binary data>
  *     responses:
- *       '200':
+ *       '201':
  *         description: User registered successfully
  *       '400':
  *         description: Bad Request - Missing or invalid credentials

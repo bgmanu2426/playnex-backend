@@ -87,12 +87,16 @@ const swaggerOptions = {
                 description: "Endpoints related to user management",
             },
             {
+                name: "🎞️ Playlists",
+                description: "Endpoints related to playlists",
+            },
+            {
                 name: "🗨️ Comments",
                 description: "Endpoints related to comments",
             },
             {
                 name: "👍 Likes",
-                description: "Endpoints related to comments",
+                description: "Endpoints related to likes",
             },
             {
                 name: "❌ Danger Zone",
