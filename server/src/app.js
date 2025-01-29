@@ -103,6 +103,10 @@ const swaggerOptions = {
                 description: "Endpoints related to comments",
             },
             {
+                name: "🐦 Tweets",
+                description: "Endpoints related to tweets",
+            },
+            {
                 name: "🎞️ Playlists",
                 description: "Endpoints related to playlists",
             },
