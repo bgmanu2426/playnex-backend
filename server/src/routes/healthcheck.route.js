@@ -9,7 +9,7 @@ const router = Router();
  *   get:
  *     summary: Check the server health
  *     tags:
- *       - Healthcheck
+ *       - ✅ Healthcheck
  *     responses:
  *       200:
  *         description: Server is running
