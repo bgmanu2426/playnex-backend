@@ -3,21 +3,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import DATA from "../config.js";
 
-/**
- * @typedef {Object} User
- * @property {string} username - Unique username
- * @property {string} email - User's email address
- * @property {string} fullName - User's full name
- * @property {File} avatar - URL to the user's avatar image
- * @property {File} coverImage - URL to the user's cover image
- * @property {mongoose.Types.ObjectId[]} watchHistory - Array of watched video IDs
- * @property {string} password - Hashed password
- * @property {string} refreshToken - Refresh token for authentication
- */
-
-/**
- * User Schema
- */
 const userSchema = new mongoose.Schema(
     {
         username: {

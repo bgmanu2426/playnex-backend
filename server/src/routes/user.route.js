@@ -72,11 +72,6 @@ const router = Router(); // create a new router object
  *         description: Internal server error
  */
 
-/**
- * Route handler for registering a new user.
- * @route POST /users/register
- * @access Public
- */
 router.route("/register").post(
     upload.fields([
         {
@@ -143,11 +138,6 @@ router.route("/register").post(
  *         description: Internal server error
  */
 
-/**
- * Route handler for logging in a user.
- * @route POST /users/login
- * @access Public
- */
 router.route("/login").post(upload.none(), loginUser);
 
 // secured routes
@@ -175,11 +165,6 @@ router.route("/login").post(upload.none(), loginUser);
  *         description: Internal server error
  */
 
-/**
- * Route handler for logging out a user.
- * @route POST /users/logout
- * @access Private
- */
 router.route("/logout").post(verifyJWT, logoutUser);
 
 /**
@@ -205,11 +190,6 @@ router.route("/logout").post(verifyJWT, logoutUser);
  *         description: Internal server error
  */
 
-/**
- * Route handler for refreshing access token.
- * @route POST /users/refresh-token
- * @access Private
- */
 router.route("/refresh-token").post(refreshAccessToken);
 
 /**
@@ -254,11 +234,6 @@ router.route("/refresh-token").post(refreshAccessToken);
  *         description: Internal server error
  */
 
-/**
- * Route handler for changing current user's password.
- * @route PATCH /users/change-password
- * @access Private
- */
 router.route("/change-password").patch(verifyJWT, changeCurrentPassword);
 
 /**
@@ -280,11 +255,6 @@ router.route("/change-password").patch(verifyJWT, changeCurrentPassword);
  *         description: Internal server error
  */
 
-/**
- * Route handler for getting current authenticated user.
- * @route GET /users/current-user
- * @access Private
- */
 router.route("/current-user").get(verifyJWT, getCurrentUser);
 
 /**
@@ -324,11 +294,6 @@ router.route("/current-user").get(verifyJWT, getCurrentUser);
  *         description: Internal server error
  */
 
-/**
- * Route handler for updating user account details.
- * @route PATCH /users/update-user
- * @access Private
- */
 router.route("/update-user").patch(verifyJWT, updateAccountDetails);
 
 /**
@@ -364,11 +329,6 @@ router.route("/update-user").patch(verifyJWT, updateAccountDetails);
  *         description: Internal server error
  */
 
-/**
- * Route handler for updating user avatar.
- * @route PATCH /users/update-avatar
- * @access Private
- */
 router
     .route("/update-avatar")
     .patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
@@ -406,11 +366,6 @@ router
  *         description: Internal server error
  */
 
-/**
- * Route handler for updating user cover image.
- * @route PATCH /users/update-cover-image
- * @access Private
- */
 router
     .route("/update-cover-image")
     .patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage);
@@ -446,11 +401,6 @@ router
  *         description: Internal server error
  */
 
-/**
- * Route handler for getting user channel profile.
- * @route GET /users/c/{username}
- * @access Private
- */
 router.route("/c/:username").get(verifyJWT, getUserChannelProfile);
 
 /**
@@ -472,11 +422,6 @@ router.route("/c/:username").get(verifyJWT, getUserChannelProfile);
  *         description: Internal server error
  */
 
-/**
- * Route handler for getting user's watch history.
- * @route GET /users/watchHistory
- * @access Private
- */
 router.route("/watchHistory").get(verifyJWT, getWatchHistory);
 
 export default router;

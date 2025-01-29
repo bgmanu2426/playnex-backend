@@ -87,6 +87,10 @@ const swaggerOptions = {
                 description: "Endpoints related to user management",
             },
             {
+                name: "🗨️ Comments",
+                description: "Endpoints related to comments",
+            },
+            {
                 name: "❌ Danger Zone",
                 description: "Endpoints related to emptying the database",
             },
