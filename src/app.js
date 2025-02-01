@@ -136,6 +136,11 @@ app.use(
     swaggerUi.setup(swaggerDocs, swaggerUiOptions)
 );
 
+// Redirect to the swagger docs when the user hits the base URL
+app.get("/", (req, res) => {
+    res.redirect("/api-docs");
+});
+
 // Global Error Handling Middleware - Must be the last middleware
 app.use(errorMiddleware);
 
