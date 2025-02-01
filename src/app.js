@@ -65,8 +65,8 @@ const swaggerOptions = {
     swaggerDefinition: {
         openapi: "3.0.3",
         info: {
-            title: "Youtube Clone API",
-            description: "Youtube Clone API Information for developers",
+            title: "PlayNex API's",
+            description: "PlayNex is an video streaming application or simply an youtube application clone, which is used to stream the videos using the cloud utility cloudinary.", 
             contact: {},
             version: "1.0.0",
         },
@@ -122,7 +122,7 @@ const swaggerOptions = {
 };
 
 const swaggerUiOptions = {
-    customSiteTitle: "My Youtube Clone API Docs",
+    customSiteTitle: "PlayNex API Docs",
     swaggerOptions: {
         docExpansion: "none",
     },

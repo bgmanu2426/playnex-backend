@@ -6,7 +6,8 @@ import DATA from "./config.js";
 connectToDB()
     .then(() => {
         app.listen(DATA.port || 8000, () => {
-            console.log(`Server listening on http://localhost:${DATA.port}`);
+            console.log(`🌐 Server listening on ${DATA.server_url}`);
+            console.log(`📄 API docs are avilable on ${DATA.server_url}/api-docs`);
         }); // Start the express server
     })
     .catch((err) => {

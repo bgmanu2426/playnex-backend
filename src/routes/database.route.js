@@ -5,7 +5,7 @@ import createRateLimiterWith from "../middlewares/ratelimit.middleware.js";
 const router = Router(); // create a new router object
 
 // Configure rate limiting with IP extraction
-const limiter = createRateLimiterWith(24, 0, 2); // 24 hours, 0 minutes, 2 requests
+const limiter = createRateLimiterWith(24, 0, 1); // 24 hours, 0 minutes, 1 requests
 router.use(limiter); // Apply rate limiter middleware to all routes in this file
 
 /**

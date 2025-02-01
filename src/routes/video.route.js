@@ -16,7 +16,6 @@ const router = Router(); // create a new router object
 
 // Configure rate limiting with IP extraction
 const limiter = createRateLimiterWith(24, 0, 5); // 24 hours, 0 minutes, 5 requests
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 /**
  * @swagger
@@ -26,8 +25,6 @@ router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
  *       - 📹 Videos
  *     summary: Get all videos
  *     description: Retrieve a list of all videos.
- *     security:
- *      - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of videos
@@ -83,6 +80,7 @@ router
     .get(getAllVideos)
     .post(
         limiter,
+        verifyJWT,
         upload.fields([
             {
                 name: "videoFile",
@@ -187,9 +185,9 @@ router
  */
 router
     .route("/:videoId")
-    .get(getVideoById)
-    .delete(deleteVideo)
-    .patch(limiter, upload.single("thumbnail"), updateVideo);
+    .get(verifyJWT, getVideoById)
+    .delete(verifyJWT, deleteVideo)
+    .patch(limiter, verifyJWT, upload.single("thumbnail"), updateVideo);
 
 /**
  * @swagger
@@ -216,7 +214,7 @@ router
  *       500:
  *         description: Internal server error
  */
-router.route("/toggle-publish/:videoId").patch(togglePublishStatus);
+router.route("/toggle-publish/:videoId").patch(verifyJWT, togglePublishStatus);
 
 /**
  * @swagger
@@ -236,6 +234,6 @@ router.route("/toggle-publish/:videoId").patch(togglePublishStatus);
  *       500:
  *         description: Internal server error
  */
-router.route("/u/my-videos").get(getVideosByUserId);
+router.route("/u/my-videos").get(verifyJWT, getVideosByUserId);
 
 export default router;
