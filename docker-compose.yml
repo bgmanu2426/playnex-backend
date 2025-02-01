@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: yt_clone_app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    # For production, uncomment below:
+    command: ["pnpm", "run", "start"]
+
+  mongo:
+    image: mongo:6
+    container_name: yt_clone_mongo
+    environment:
+      - MONGO_INITDB_DATABASE=$DB_NAME
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
