@@ -66,7 +66,8 @@ const swaggerOptions = {
         openapi: "3.0.3",
         info: {
             title: "PlayNex API's",
-            description: "PlayNex is an video streaming application or simply an youtube application clone, which is used to stream the videos using the cloud utility cloudinary.", 
+            description:
+                "PlayNex is an video streaming application or simply an youtube application clone, which is used to stream the videos using the cloud utility cloudinary.",
             contact: {},
             version: "1.0.0",
         },
@@ -114,7 +115,7 @@ const swaggerOptions = {
         ],
         servers: [
             {
-                url: "http://localhost:8000/api/v1",
+                url: `${DATA.server_url}/api/v1`,
             },
         ],
     },
