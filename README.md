@@ -54,15 +54,11 @@ PlayNex is built using the following technologies:
 
 8. **PM2:** A production process manager for Node.js applications with a built-in load balancer.
 
-9. **Railway:** A platform for deploying web applications with ease.
-
 # 📊 ER Diagram
 
 The Entity-Relationship Diagram (ERD) for PlayNex provides a visual representation of the database schema, showcasing the relationships between different entities within the system. This diagram is essential for understanding the data structure and how various components interact with each other.
 
-![ERD](https://i.ibb.co/20zcHVn1/diagram-export-2-1-2025-8-25-15-PM.png)
-
-You can view the detailed ERD by clicking on the link above.
+You can view the detailed ERD by clicking on the link below.
 [ERD](https://app.eraser.io/workspace/EZNlt2ORc3GmaiVVmdX0?origin=share)
 
 # 🏁 Installation
